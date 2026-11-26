@@ -8,7 +8,7 @@ El preentrenamiento consume solo `train.jsonl`; la validación es independiente.
 
 Los artefactos SFT se preparan por separado. El input JSONL tiene una fila por conversación con `conversation_id`, `source_id` y `messages` alternados entre `user` y `assistant`; el registro de fuentes aporta URL, licencia exacta y atribución. El preparador valida estructura, duplicados y patrones comunes de PII, asigna train/validation/test de forma determinista por conversación y guarda hashes; el manifest queda siempre en revisión pendiente. El loader exige autorización humana, hash del tokenizador y de los tres splits, aprobación de cada fuente, consistencia de licencia/URL/atribución, ausencia de PII detectada y ninguna fuga entre splits. En SFT, el loss ignora los tokens user y optimiza las respuestas assistant.
 
-Se preparó un candidato OASST1 con filtro conservador: 779 diálogos de un turno, 701/38/40 en train/validation/test, 200 reservados para revisión humana; solo se retienen ramas españolas no sintéticas con anotaciones de revisión/seguridad positivas, respuesta mejor clasificada, PII de patrón ausente y longitud ≤256. El snapshot (SHA-256 `2a9a8fd343e9b28e04a895a669d3253f82d93e9c174d440199ae19d5fafbdff7`) y sus artefactos están en `C:\Geriv2-Data\sft\candidate`; el manifiesto sigue sin aprobar. Correr `scripts/extract_oasst1_sft.py` y el comando `prepare-sft` descrito en [gobierno de datos](data-governance.md) reproduce la preparación desde el archivo local.
+El snapshot fijado de OASST1 produjo 779 pares iniciales. La revisión determinista descartó 46 respuestas claramente incompatibles o con errores conocidos y retuvo 733; no reescribió respuestas OASST. Se añadieron ocho conversaciones originales de Geri de dos turnos. El candidato tiene 741 conversaciones en splits 666/37/38. El manifest, hashes, cola de 741 registros y muestra de 200 están en `C:\Geriv2-Data\sft\candidate`; el manifest sigue sin aprobar. `scripts/curate_sft_candidate.py` reproduce la curación con la fuente de diálogos original conservada fuera de Git en `C:\Geriv2-Data\sft\source-workspace\curated-input-20261125`.
 
 Fila de entrada (`conversations.jsonl`):
 
@@ -31,7 +31,7 @@ Para instalación aislada, preparar wheels para el mismo Windows, arquitectura y
 python -m pip install --no-index --find-links .\wheelhouse -e ".[training,dev]"
 ```
 
-El motor no necesita red una vez instaladas sus dependencias y presentes snapshots, tokenizador y datos congelados.
+El motor no necesita red una vez instaladas sus dependencias y presentes snapshots, tokenizador y datos congelados. La configuración actual de trabajo no añade PyTorch al `.venv` de Geriv2; las operaciones de preparación de datos no lo importan. El launcher reutiliza el `.venv` de Geri v1 solo si sus dependencias están disponibles.
 
 ## Benchmark de tamaño
 
@@ -44,10 +44,12 @@ Comparar tamaños sintéticos tiny/small/medium; guardar `model-benchmark.json`.
 Preparar un candidato conversacional desde archivos locales (requiere un registro de fuentes real):
 
 ```powershell
-python -m geri.training.cli prepare-sft --config configs/training.json --input C:\Geriv2-Data\sft\input\conversations.jsonl --sources C:\Geriv2-Data\sft\input\sources.json --data C:\Geriv2-Data\sft\candidate --tokenizer C:\Geriv2-Data\corpus\pretraining\tokenizer\tokenizer.json
+$env:PYTHONPATH = (Join-Path (Get-Location) 'src')
+python scripts\curate_sft_candidate.py --input C:\Geriv2-Data\sft\source-workspace\candidate-input-256\conversations.jsonl --geri-dialogues C:\Geriv2-Data\sft\source-workspace\curated-input-20261125\geri_identity_source.jsonl --tokenizer C:\Geriv2-Data\corpus\pretraining\tokenizer\tokenizer.json --output C:\Geriv2-Data\sft\source-workspace\curated-input-20261125 --max-seq-len 256
+python -m geri.training.cli prepare-sft --config configs\training.json --input C:\Geriv2-Data\sft\source-workspace\curated-input-20261125\conversations.jsonl --sources C:\Geriv2-Data\sft\source-workspace\curated-input-20261125\sources.json --data C:\Geriv2-Data\sft\candidate --tokenizer C:\Geriv2-Data\corpus\pretraining\tokenizer\tokenizer.json
 ```
 
-La salida sigue pendiente y no se puede entrenar hasta cerrar y registrar la revisión humana de fuentes, PII, factualidad y calidad.
+La preparación SFT usa solo Python y `tokenizers`; PyTorch se carga al entrar en benchmark, smoke o entrenamiento. La salida sigue pendiente y no se puede entrenar hasta cerrar y registrar la revisión humana de fuentes, PII, factualidad y calidad.
 
 ## Smoke test (solo fixture sintético)
 
@@ -86,6 +88,6 @@ La ejecución de corpus no es una recomendación para el estado actual: la autor
 - PyTorch 2.15.0+cpu se reutilizó desde el `.venv` de Geri v1 en modo solo lectura; no se modificó Geri v1 ni se usaron sus datos, pesos o tokenizador.
 - La reanudación serializa estado aleatorio de Python y PyTorch; la reproducción bit a bit puede variar con versiones de CPU/runtime. Se debe mantener la misma versión y configuración.
 - La regresión usa límite de razón 1,10 sobre test reservado de preentrenamiento; SFT test se informa aparte y no elige el checkpoint.
-- El corpus de preentrenamiento y el candidato SFT local siguen pendientes de revisión humana. La revisión documental no equivale a aprobación legal ni de factualidad. El entrenamiento de producto queda bloqueado.
+- El corpus de preentrenamiento (48.873 registros ELTeC/BOE) y el candidato SFT (741 conversaciones, incluidas ocho de autoría del proyecto) siguen pendientes de revisión humana. Se excluyó CORDIS y se preservó en cuarentena. La revisión documental no equivale a aprobación legal ni de factualidad. El entrenamiento de producto queda bloqueado.
 - No se crea checkpoint de inferencia empaquetado ni generador de texto; están fuera de esta fase del motor.
 - El consumo energético y térmico requieren medición externa. La predicción de tiempo restante es extrapolación lineal.

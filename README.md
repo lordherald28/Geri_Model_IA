@@ -4,7 +4,7 @@ Proyecto de investigación para construir un modelo de lenguaje en español con 
 
 ## Estado
 
-Fase de preparación de piloto — motor probado offline, benchmark CPU repetido con contexto 256, candidato SFT OASST1 generado y validado técnicamente (779 ejemplos). Ambos manifiestos siguen sin aprobación humana y bloquean el entrenamiento definitivo. Solo se ejecutaron pruebas/smoke sintéticos; no se inició entrenamiento de producto.
+Fase de preparación de piloto — motor probado offline, benchmark CPU repetido con contexto 256, candidato SFT curado de 741 conversaciones (733 OASST retenidas y 8 diálogos Geri originales). Ambos manifiestos siguen sin aprobación humana y bloquean el entrenamiento definitivo. No se inició entrenamiento de producto.
 
 ## Mapa
 

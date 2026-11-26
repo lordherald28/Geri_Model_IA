@@ -5,15 +5,8 @@ import argparse
 import json
 from pathlib import Path
 
-import torch
-
-from .benchmark import run_benchmark
-from .data import create_synthetic_smoke_data, load_frozen_corpus, load_sft_corpus
-from .engine import run_phase
-from .engine import train
 from .offline import offline_execution
 from .sft_prepare import prepare_sft
-from geri.model.transformer import GeriTransformer
 
 
 def main() -> None:
@@ -43,11 +36,17 @@ def main() -> None:
         print(json.dumps(manifest, ensure_ascii=False, indent=2))
         return
     if args.command == "benchmark":
+        from .benchmark import run_benchmark
+
         with offline_execution():
             result = run_benchmark(config, args.output, args.benchmark_steps, args.benchmark_repeats)
         print(json.dumps(result, indent=2))
         return
     if args.command == "smoke":
+        from .data import create_synthetic_smoke_data, load_frozen_corpus
+        from .engine import run_phase
+        from geri.model.transformer import GeriTransformer
+
         with offline_execution():
             create_synthetic_smoke_data(args.data, args.tokenizer, int(config["seed"]))
         if not args.authorize_pretraining:
@@ -71,6 +70,9 @@ def main() -> None:
         raise SystemExit("training requires a separate approved SFT dataset and tokenizer (--sft-data, --sft-tokenizer)")
     if not args.authorize_sft:
         raise SystemExit("SFT requires --authorize-sft; this is separate from pretraining authorization")
+    from .data import load_frozen_corpus, load_sft_corpus
+    from .engine import train
+
     with offline_execution():
         datasets, manifest = load_frozen_corpus(args.data, args.tokenizer)
     if manifest.get("dataset_status") != "approved_for_training":
