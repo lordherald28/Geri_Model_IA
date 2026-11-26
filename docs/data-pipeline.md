@@ -29,7 +29,7 @@ Output was kept outside Git on C: because D: had approximately 96 MiB free. The 
 
 ## Current resource preflight (2026-11-25)
 
-At follow-up, Windows reported a Ryzen 5 7530U (6 cores/12 logical processors), 31.35 GiB installed memory and 12.48 GiB available physical memory. C: had 192.45 GiB free, D: 26.19 MiB, and E: 2.14 GiB. The existing corpus occupies 49,638,387 bytes. The pipeline therefore sets the download/output ceilings above, keeps a 1 GiB free-space reserve and rejects an output volume without reserve plus the 100 MB artifact allowance. Corpus acquisition was not repeated during this preflight. GPU availability was not relied upon; the data pipeline is CPU-only.
+At follow-up, Windows reported a Ryzen 5 7530U (6 cores/12 logical processors), 31.35 GiB installed memory and 12.51 GiB available physical memory. C: had 192.45 GiB free, D: 26.19 MiB, and E: 2.15 GiB. The existing corpus occupies 49,638,387 bytes. The pipeline therefore sets the download/output ceilings above, keeps a 1 GiB free-space reserve and rejects an output volume without reserve plus the 100 MB artifact allowance. Corpus acquisition was not repeated during this preflight. GPU availability was not relied upon; the data pipeline is CPU-only.
 
 | Vocabulary | Actual size | Train chars/token | Validation tokens/char |
 |---:|---:|---:|---:|
