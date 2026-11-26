@@ -20,9 +20,9 @@ def run_benchmark(base_config: dict, output: Path, steps: int = 20, repeats: int
         raise ValueError("dimensioning benchmark currently measures CPU only")
     output.mkdir(parents=True, exist_ok=True)
     candidates = [
-        {"name": "tiny", "d_model": 64, "n_heads": 2, "n_layers": 2, "d_ff": 256, "max_seq_len": 128, "batch_size": 4},
-        {"name": "small", "d_model": 128, "n_heads": 4, "n_layers": 4, "d_ff": 512, "max_seq_len": 128, "batch_size": 4},
-        {"name": "medium", "d_model": 192, "n_heads": 6, "n_layers": 4, "d_ff": 768, "max_seq_len": 128, "batch_size": 4},
+        {"name": "tiny", "d_model": 64, "n_heads": 2, "n_layers": 2, "d_ff": 256, "max_seq_len": int(base_config["model"]["max_seq_len"]), "batch_size": 4},
+        {"name": "small", "d_model": 128, "n_heads": 4, "n_layers": 4, "d_ff": 512, "max_seq_len": int(base_config["model"]["max_seq_len"]), "batch_size": 4},
+        {"name": "medium", "d_model": 192, "n_heads": 6, "n_layers": 4, "d_ff": 768, "max_seq_len": int(base_config["model"]["max_seq_len"]), "batch_size": 4},
     ]
     trial = json.loads(json.dumps(base_config))
     trial["resources"]["min_free_disk_bytes"] = 0
@@ -76,6 +76,7 @@ def run_benchmark(base_config: dict, output: Path, steps: int = 20, repeats: int
               "steps_per_repeat": steps, "repeat_count": repeats,
               "ram_measurement": "process RSS sampled via psutil or Windows GetProcessMemoryInfo",
               "candidates": records,
-              "selection": max(records, key=lambda row: row["tokens_per_second_mean"])["candidate"]}
+              "fastest_candidate_by_tokens_per_second": max(records, key=lambda row: row["tokens_per_second_mean"])["candidate"],
+              "selection_criteria": "throughput is reported, not used as a model-quality or capacity decision"}
     (output / "model-benchmark.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     return result

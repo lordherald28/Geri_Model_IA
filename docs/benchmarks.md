@@ -2,23 +2,23 @@
 
 ## Equipo y medición
 
-Windows; AMD Ryzen 5 7530U, 6 núcleos/12 hilos; 31,35 GiB RAM. PyTorch 2.15.0+cpu, Python 3.12.10, seis hilos intra-op. Durante la medición había 12,95 GB de RAM física disponibles y aproximadamente 206 GB libres en C:. No se identificó GPU de entrenamiento. Medición repetible y agregado en [`model-benchmark-20261125.json`](../benchmarks/model-benchmark-20261125.json).
+Windows; AMD Ryzen 5 7530U, 6 núcleos/12 hilos; 31,35 GiB RAM. PyTorch 2.15.0+cpu, Python 3.12.10, seis hilos intra-op. Durante la medición había 12,98 GB de RAM física disponibles y aproximadamente 208,6 GB libres en C:. No se identificó GPU de entrenamiento. Medición repetible y agregado en [`model-benchmark-20261125.json`](../benchmarks/model-benchmark-20261125.json).
 
-Se compararon tres tamaños en CPU con batch 4, contexto 128, 2 pasos de calentamiento y 30 pasos medidos por repetición, 3 repeticiones cada uno. Entradas de tokens aleatorios: sirve para dimensionar compute/memoria, no calidad ni flujo de lectura del corpus.
+Se compararon tres tamaños en CPU con batch 4, contexto 256, 2 pasos de calentamiento y 30 pasos medidos por repetición, 3 repeticiones cada uno. Entradas de tokens aleatorios: sirve para dimensionar compute/memoria, no calidad ni flujo de lectura del corpus.
 
 | Candidato | Parámetros | Tokens/s promedio (rango) | RSS pico absoluto | Checkpoint |
 |---|---:|---:|---:|---:|
-| tiny: d=64, 2 capas | 238.848 | 21.790 (19.695–22.848) | 332 MB | 2,90 MB |
-| small: d=128, 4 capas | 1.069.824 | 6.545 (5.670–7.286) | 379 MB | 12,89 MB |
-| medium: d=192, 4 capas | 2.194.560 | 4.656 (4.093–5.080) | 421 MB | 26,39 MB |
+| tiny: d=64, 2 capas | 247.040 | 15.943 (15.315–16.279) | 362 MB | 2,99 MB |
+| small: d=128, 4 capas | 1.086.208 | 4.566 (4.219–4.939) | 459 MB | 13,09 MB |
+| medium: d=192, 4 capas | 2.219.136 | 3.436 (3.385–3.505) | 519 MB | 26,68 MB |
 
-La configuración de ejecución queda en `medium` (d=192, 4 capas, 6 cabezas, FFN 768): tiene 9,2 veces los parámetros de tiny y 2,1 veces los de small, a cambio de 4,7 veces menos tokens/s que tiny. Se prefiere esa capacidad adicional porque la meta es lenguaje/conversación, no throughput aislado; su RSS de benchmark es 421 MB y checkpoint 26,4 MB, razonables frente a 12,98 GB disponibles. Es todavía un modelo de investigación muy pequeño y no hay evidencia de calidad hasta entrenar/evaluar con datos aprobados. No se seleccionó por generación de calidad, que no se pudo probar con corpus bloqueados.
+La configuración de ejecución queda en `medium` (d=192, 4 capas, 6 cabezas, FFN 768): tiene 9 veces los parámetros de tiny y 2 veces los de small, a cambio de 4,6 veces menos tokens/s que tiny. Se prefiere esa capacidad adicional y contexto 256 porque la meta es lenguaje/conversación, no throughput aislado; su RSS de benchmark es 519 MB y checkpoint 26,68 MB, razonables frente a 12,98 GB disponibles. El campo `fastest_candidate_by_tokens_per_second` identifica solo velocidad; no selecciona el tamaño final. Es todavía un modelo de investigación muy pequeño y no hay evidencia de calidad hasta entrenar/evaluar con datos aprobados.
 
-Para el corpus candidato actual hay 1.883.060 tokens BPE en train y 563.753 en validation. Con `medium`, batch 4, contexto 128 y límite de 10.000 pasos se procesarían hasta 5,12 M posiciones objetivo (2,72 recorridos equivalentes) en unos 18 min a throughput sintético promedio. Las evaluaciones añaden hasta 1,64 M posiciones forward; SFT añade hasta 0,51 M posiciones de entrenamiento y 0,66 M de evaluación. Extrapolando a las mediciones CPU, la planificación es 30–50 min para ambas fases, incluyendo evaluaciones y checkpoints, pero sin garantía: no se midió una corrida completa, la carga/tokenización ni variación térmica; early stopping puede reducirlo. Recalcular con el benchmark local antes de iniciar.
+Para el corpus candidato actual hay 1.883.060 tokens BPE en train y 563.753 en validation. Con `medium`, batch 4, contexto 256 y límite de 10.000 pasos se procesarían hasta 10,24 M posiciones objetivo (5,44 recorridos equivalentes) en unos 50 min a throughput sintético promedio. Las evaluaciones añaden hasta 3,28 M posiciones forward; SFT del candidato de 779 diálogos añade hasta 1,02 M posiciones de entrenamiento y 1,31 M de evaluación. Planificación combinada: 60–90 min, extrapolada con sobrecarga de evaluación/checkpoint/carga; no se midió una corrida completa ni variación térmica. El early stopping puede reducir duración. Recalcular antes de iniciar.
 
 ## Configuración medida
 
-`configs/training.json`: vocabulario 2.048, d_model 192, 6 cabezas, 4 capas, FFN 768, contexto 128, batch 4, CPU/6 threads. AdamW a 3e-4, weight decay 0,1, gradient clip 1,0, evaluación/checkpoint cada 100 pasos y early stopping tras 8 evaluaciones sin mejora de al menos 0,001. SFT usa optimizador nuevo, LR 1e-4, máximo 1.000 pasos y evaluación cada 25 pasos; el checkpoint solo se promociona si pasa la regresión configurada. Son parámetros conservadores de piloto, no receta de calidad demostrada.
+`configs/training.json`: vocabulario 2.048, d_model 192, 6 cabezas, 4 capas, FFN 768, contexto 256, batch 4, CPU/6 threads. AdamW a 3e-4, weight decay 0,1, gradient clip 1,0, evaluación/checkpoint cada 100 pasos y early stopping tras 8 evaluaciones sin mejora de al menos 0,001. SFT usa optimizador nuevo, LR 1e-4, máximo 1.000 pasos y evaluación cada 25 pasos; el checkpoint solo se promociona si pasa la regresión configurada. Son parámetros conservadores de piloto, no receta de calidad demostrada.
 
 ## Criterios conversacionales propuestos
 

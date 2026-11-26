@@ -4,7 +4,7 @@ Proyecto de investigación para construir un modelo de lenguaje en español con 
 
 ## Estado
 
-Fase de motor experimental — corpus ampliado, validación técnica/offline, tokenizador medido y entrenamiento sintético pequeño verificado. Las revisiones humanas de licencias/calidad por fuente y el corpus SFT real siguen pendientes; el motor bloquea ambos manifests. No se inició entrenamiento de producto.
+Fase de preparación de piloto — motor probado offline, benchmark CPU repetido con contexto 256, candidato SFT OASST1 generado y validado técnicamente (779 ejemplos). Ambos manifiestos siguen sin aprobación humana y bloquean el entrenamiento definitivo. Solo se ejecutaron pruebas/smoke sintéticos; no se inició entrenamiento de producto.
 
 ## Mapa
 
@@ -21,7 +21,7 @@ Fase de motor experimental — corpus ampliado, validación técnica/offline, to
 
 PyTorch 2.15.0+cpu y tokenizers 0.23.3 se reutilizaron desde el entorno local compatible de Geri v1, solo para benchmark y pruebas, sin modificar ese proyecto ni usar sus datos/modelos. Para preparar otro entorno: `python -m pip install -e ".[training,dev]"`; en equipos aislados, transferir ruedas compatibles con sus hashes.
 
-Flujo manual, preparación SFT y comando PowerShell: [motor de entrenamiento](docs/training-engine.md). El benchmark de selección está en [benchmarks](docs/benchmarks.md). No iniciar entrenamiento con `C:\geri2-corpus` mientras su manifest siga siendo `technically_prepared_candidate`.
+Flujo manual, preparación SFT y comando PowerShell: [motor de entrenamiento](docs/training-engine.md). El benchmark de selección está en [benchmarks](docs/benchmarks.md). No ejecutar `scripts\Train-Geri.ps1` hasta que ambos manifests indiquen aprobación humana explícita.
 
 ## Principios
 

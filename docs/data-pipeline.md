@@ -71,5 +71,6 @@ These limits leave roughly 2.9x headroom over present artifacts and 1.8x over a 
 - Source acquisition: 7 additional source snapshots fetched within limits; subsequent offline rebuild downloaded 0 bytes.
 - No Geri v1 files, checkpoints or weights were modified or reused; model training was not run.
 - Human review still needed for ELTeC transcription rights/quality and personal names; BOE legal update/interpretation; CORDIS machine-translation quality, factual claims and named public coordinators. Broad contemporary Spanish and a larger education/general-knowledge corpus remain open coverage gaps.
+- Current review aid: `C:\geri2-corpus\review\human_review_sample.jsonl`, 29 deterministic source/document examples (22 ELTeC works, 4 BOE texts, 3 CORDIS articles); SHA-256 and pending decision list are recorded in the external corpus manifest. The full corpus scan found no replacement characters or common-pattern PII; neither scan resolves names, contextual identifiers, transcription rights or factual/legal accuracy.
 
 Generated exact counts, per-domain/per-split measurements, source hashes and tokenizer SHA-256 are in the external files `C:\geri2-corpus\processed\manifest.json` and `C:\geri2-corpus\tokenizer\metrics.json`.

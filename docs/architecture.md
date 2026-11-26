@@ -27,8 +27,8 @@ La frontera offline debe aceptar artefactos inmutables con manifiesto, hashes y 
 
 ## Selección experimental vigente
 
-El microbenchmark sintético en CPU seleccionó para el piloto 238.848 parámetros: vocabulario 2.048, `d_model=64`, 2 capas/cabezas, FFN 256, contexto 128 y batch 4. AdamW con clipping, evaluación/early stopping y checkpoints se implementan en `src/geri/training/`; véase `docs/benchmarks.md` para resultados y límites. Esta configuración no prueba capacidad lingüística general ni autoriza el corpus.
+El benchmark sintético en CPU comparó tres candidatos y la configuración de piloto queda en 2.219.136 parámetros: vocabulario 2.048, `d_model=192`, 4 capas/6 cabezas, FFN 768, contexto 256 y batch 4. La selección favorece capacidad relativa/contexto frente a throughput aislado y permanece limitada, sin evidencia de calidad conversacional. AdamW con clipping, evaluación/early stopping y checkpoints se implementan en `src/geri/training/`; véase `docs/benchmarks.md`. Esta configuración no autoriza el corpus.
 
 ## Decisiones aplazadas
 
-Siguen pendientes los datos aprobados de pretraining/SFT, factualidad/cobertura esperada, duración/energía aceptable, derechos aplicables a la distribución de pesos y evaluación humana. La configuración de entrenamiento permanece piloto hasta tener datos aprobados y calidad evaluada. La inferencia y política de promoción final no están implementadas.
+Siguen pendientes la aprobación humana de ambos corpora, factualidad/cobertura, revisión de derechos para distribución de pesos, evaluación humana del modelo y medición de energía. La configuración de entrenamiento permanece piloto hasta aprobar datos y medir calidad. La inferencia y política de promoción final no están implementadas.
