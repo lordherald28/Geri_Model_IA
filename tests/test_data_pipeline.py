@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from geri.data.pipeline import _boe_latest_text, _check_capacity, _cordis_text, normalize, pii_findings, quality_reasons, sha256, validate
+from geri.data.pipeline import _boe_latest_text, _check_capacity, _cordis_text, _merge_duplicate_provenance, normalize, pii_findings, quality_reasons, sha256, validate
 
 
 def test_normalization_is_unicode_nfc_and_collapses_space():
@@ -70,3 +70,12 @@ def test_cordis_extractor_keeps_article_body_and_discards_page_chrome(tmp_path: 
 
 def test_pii_pattern_screen_detects_contact_identifiers():
     assert set(pii_findings("Escribe a persona@example.org o llama al +34 612 345 678; DNI 12345678Z")) == {"email", "phone", "dni_nie"}
+
+
+def test_duplicate_merge_keeps_secondary_provenance_once():
+    primary = {"text": "frase", "source": "one", "source_id": "a", "license": "CC BY 4.0", "url": "https://example.org/a"}
+    duplicate = {"text": "frase", "source": "two", "source_id": "b", "license": "CC0-1.0", "url": "https://example.org/b"}
+    _merge_duplicate_provenance(primary, duplicate)
+    _merge_duplicate_provenance(primary, duplicate)
+    assert len(primary["additional_provenance"]) == 1
+    assert primary["additional_provenance"][0]["source"] == "two"

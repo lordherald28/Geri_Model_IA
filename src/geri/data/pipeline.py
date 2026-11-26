@@ -323,9 +323,22 @@ def _cordis_text(path: Path) -> str:
 
 
 def _records_for_document(text: str, document: str, source: dict) -> list[dict]:
-    metadata = source.get("document_metadata", {}).get(document, {})
-    url = metadata.get("url") or source.get("source_page") or source.get("url_template", source.get("url", ""))
+    document_metadata = source.get("document_metadata", {}).get(document, {})
+    metadata = {key: value for key, value in document_metadata.items() if key != "url"}
+    url = document_metadata.get("url") or source.get("source_page") or source.get("url_template", source.get("url", ""))
     return [{"text": sentence, "document_id": f"{source['id']}:{document}", "source_id": document, "source": source["id"], "domain": source["domain"], "url": url, "license": source["license"], "license_url": source.get("license_url", ""), "attribution": source["attribution"], "source_metadata": metadata} for sentence in _sentences(text)]
+
+
+PROVENANCE_FIELDS = ("source", "source_id", "domain", "url", "license", "license_url", "attribution", "source_metadata")
+
+
+def _merge_duplicate_provenance(primary: dict, duplicate: dict) -> None:
+    primary_provenance = {key: primary.get(key) for key in PROVENANCE_FIELDS}
+    duplicate_provenance = {key: duplicate.get(key) for key in PROVENANCE_FIELDS}
+    additional = primary.setdefault("additional_provenance", [])
+    for item in (primary_provenance, duplicate_provenance):
+        if item != primary_provenance and item not in additional:
+            additional.append(item)
 
 
 def prepare(config_path: Path, output_dir: Path, source_ids: set[str] | None = None, offline: bool = False) -> dict:
@@ -375,13 +388,8 @@ def prepare(config_path: Path, output_dir: Path, source_ids: set[str] | None = N
         fingerprint = hashlib.sha256(text.casefold().encode("utf-8")).hexdigest()
         if fingerprint in seen:
             duplicates += 1
-            provenance = row.get("provenance", [{key: row.get(key) for key in ("source", "source_id", "domain", "url", "license", "license_url", "attribution", "source_metadata")}])
-            existing = seen[fingerprint].setdefault("provenance", [{key: seen[fingerprint].get(key) for key in ("source", "source_id", "domain", "url", "license", "license_url", "attribution", "source_metadata")}])
-            for item in provenance:
-                if item not in existing:
-                    existing.append(item)
+            _merge_duplicate_provenance(seen[fingerprint], row)
             continue
-        row["provenance"] = row.get("provenance", [{key: row.get(key) for key in ("source", "source_id", "domain", "url", "license", "license_url", "attribution", "source_metadata")}])
         seen[fingerprint] = row
         row["text"] = text
         row["document_hash"] = hashlib.sha256(row["document_id"].encode()).hexdigest()
