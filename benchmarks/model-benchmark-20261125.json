@@ -23,36 +23,36 @@
       "parameters": 238848,
       "repeats": [
         {
-          "tokens_per_second": 19602.49058248644,
-          "step_seconds": 0.02611913000776743,
-          "rss_baseline_bytes": 289095680,
-          "rss_peak_bytes": 329809920,
+          "tokens_per_second": 22825.79475679637,
+          "step_seconds": 0.02243076332961209,
+          "rss_baseline_bytes": 289812480,
+          "rss_peak_bytes": 330596352,
           "checkpoint_bytes": 2896049
         },
         {
-          "tokens_per_second": 18906.151145320193,
-          "step_seconds": 0.027081133334043748,
-          "rss_baseline_bytes": 330842112,
-          "rss_peak_bytes": 332185600,
+          "tokens_per_second": 19695.168543761363,
+          "step_seconds": 0.025996223330730574,
+          "rss_baseline_bytes": 331644928,
+          "rss_peak_bytes": 332476416,
           "checkpoint_bytes": 2896049
         },
         {
-          "tokens_per_second": 19758.163167963743,
-          "step_seconds": 0.025913340002686407,
-          "rss_baseline_bytes": 332222464,
-          "rss_peak_bytes": 332324864,
+          "tokens_per_second": 22847.809936243037,
+          "step_seconds": 0.022409149998566136,
+          "rss_baseline_bytes": 328122368,
+          "rss_peak_bytes": 328343552,
           "checkpoint_bytes": 2896049
         }
       ],
-      "tokens_per_second_mean": 19422.268298590123,
-      "tokens_per_second_min": 18906.151145320193,
-      "step_seconds_mean": 0.02637120111483253,
-      "process_rss_peak_observed_bytes": 332324864,
+      "tokens_per_second_mean": 21789.59107893359,
+      "tokens_per_second_min": 19695.168543761363,
+      "step_seconds_mean": 0.0236120455529696,
+      "process_rss_peak_observed_bytes": 332476416,
       "checkpoint_bytes": 2896049,
       "preflight": {
         "device": "cpu",
-        "free_disk_bytes": 205872189440,
-        "available_memory_bytes": 12948414464,
+        "free_disk_bytes": 208619905024,
+        "available_memory_bytes": 12975923200,
         "disk_reserve_bytes": 0,
         "memory_reserve_bytes": 0
       }
@@ -73,36 +73,36 @@
       "parameters": 1069824,
       "repeats": [
         {
-          "tokens_per_second": 6186.303925920919,
-          "step_seconds": 0.08276347333254913,
-          "rss_baseline_bytes": 312705024,
-          "rss_peak_bytes": 377356288,
+          "tokens_per_second": 7285.881877549379,
+          "step_seconds": 0.07027289333054795,
+          "rss_baseline_bytes": 328527872,
+          "rss_peak_bytes": 378892288,
           "checkpoint_bytes": 12892115
         },
         {
-          "tokens_per_second": 5552.661134584516,
-          "step_seconds": 0.09220803999924101,
-          "rss_baseline_bytes": 369594368,
-          "rss_peak_bytes": 377929728,
+          "tokens_per_second": 5670.269613689454,
+          "step_seconds": 0.0902955299980628,
+          "rss_baseline_bytes": 379244544,
+          "rss_peak_bytes": 379498496,
           "checkpoint_bytes": 12892115
         },
         {
-          "tokens_per_second": 6108.100736933276,
-          "step_seconds": 0.08382311000605114,
-          "rss_baseline_bytes": 328077312,
-          "rss_peak_bytes": 376762368,
+          "tokens_per_second": 6678.308198501222,
+          "step_seconds": 0.07666612333268859,
+          "rss_baseline_bytes": 341934080,
+          "rss_peak_bytes": 377073664,
           "checkpoint_bytes": 12892115
         }
       ],
-      "tokens_per_second_mean": 5949.02193247957,
-      "tokens_per_second_min": 5552.661134584516,
-      "step_seconds_mean": 0.0862648744459471,
-      "process_rss_peak_observed_bytes": 377929728,
+      "tokens_per_second_mean": 6544.819896580018,
+      "tokens_per_second_min": 5670.269613689454,
+      "step_seconds_mean": 0.07907818222043311,
+      "process_rss_peak_observed_bytes": 379498496,
       "checkpoint_bytes": 12892115,
       "preflight": {
         "device": "cpu",
-        "free_disk_bytes": 205872189440,
-        "available_memory_bytes": 12948414464,
+        "free_disk_bytes": 208619905024,
+        "available_memory_bytes": 12975923200,
         "disk_reserve_bytes": 0,
         "memory_reserve_bytes": 0
       }
@@ -123,36 +123,36 @@
       "parameters": 2194560,
       "repeats": [
         {
-          "tokens_per_second": 3879.8031919999785,
-          "step_seconds": 0.1319654566643294,
-          "rss_baseline_bytes": 347639808,
-          "rss_peak_bytes": 416854016,
+          "tokens_per_second": 4093.2751883466885,
+          "step_seconds": 0.1250832100068995,
+          "rss_baseline_bytes": 347234304,
+          "rss_peak_bytes": 417136640,
           "checkpoint_bytes": 26389257
         },
         {
-          "tokens_per_second": 4097.068187738661,
-          "step_seconds": 0.12496740999631584,
-          "rss_baseline_bytes": 396853248,
-          "rss_peak_bytes": 415924224,
+          "tokens_per_second": 4793.425816551431,
+          "step_seconds": 0.10681295999869084,
+          "rss_baseline_bytes": 398516224,
+          "rss_peak_bytes": 416493568,
           "checkpoint_bytes": 26389257
         },
         {
-          "tokens_per_second": 4143.6664181581355,
-          "step_seconds": 0.12356206999587206,
-          "rss_baseline_bytes": 365285376,
-          "rss_peak_bytes": 412803072,
+          "tokens_per_second": 5079.856938305904,
+          "step_seconds": 0.10079024000442587,
+          "rss_baseline_bytes": 365154304,
+          "rss_peak_bytes": 420573184,
           "checkpoint_bytes": 26389257
         }
       ],
-      "tokens_per_second_mean": 4040.1792659655916,
-      "tokens_per_second_min": 3879.8031919999785,
-      "step_seconds_mean": 0.12683164555217244,
-      "process_rss_peak_observed_bytes": 416854016,
+      "tokens_per_second_mean": 4655.519314401341,
+      "tokens_per_second_min": 4093.2751883466885,
+      "step_seconds_mean": 0.11089547000333873,
+      "process_rss_peak_observed_bytes": 420573184,
       "checkpoint_bytes": 26389257,
       "preflight": {
         "device": "cpu",
-        "free_disk_bytes": 205872189440,
-        "available_memory_bytes": 12948414464,
+        "free_disk_bytes": 208619905024,
+        "available_memory_bytes": 12975923200,
         "disk_reserve_bytes": 0,
         "memory_reserve_bytes": 0
       }

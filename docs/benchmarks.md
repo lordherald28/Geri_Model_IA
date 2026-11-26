@@ -8,17 +8,21 @@ Se compararon tres tamaños en CPU con batch 4, contexto 128, 2 pasos de calenta
 
 | Candidato | Parámetros | Tokens/s promedio (rango) | RSS pico absoluto | Checkpoint |
 |---|---:|---:|---:|---:|
-| tiny: d=64, 2 capas | 238.848 | 19.422 (18.906–19.758) | 332 MB | 2,90 MB |
-| small: d=128, 4 capas | 1.069.824 | 5.949 (5.553–6.186) | 378 MB | 12,89 MB |
-| medium: d=192, 4 capas | 2.194.560 | 4.040 (3.880–4.144) | 417 MB | 26,39 MB |
+| tiny: d=64, 2 capas | 238.848 | 21.790 (19.695–22.848) | 332 MB | 2,90 MB |
+| small: d=128, 4 capas | 1.069.824 | 6.545 (5.670–7.286) | 379 MB | 12,89 MB |
+| medium: d=192, 4 capas | 2.194.560 | 4.656 (4.093–5.080) | 421 MB | 26,39 MB |
 
-Se selecciona `tiny` para el piloto por throughput y coste de checkpoint; la RAM medida está muy por debajo de la reserva configurada de 3 GiB. RSS pico absoluto incluye runtime/PyTorch y cachés del allocator; entre réplicas el baseline varía. La carga real podría usar más memoria por tokenizar 48.948 registros y mantener splits en RAM.
+La configuración de ejecución queda en `medium` (d=192, 4 capas, 6 cabezas, FFN 768): tiene 9,2 veces los parámetros de tiny y 2,1 veces los de small, a cambio de 4,7 veces menos tokens/s que tiny. Se prefiere esa capacidad adicional porque la meta es lenguaje/conversación, no throughput aislado; su RSS de benchmark es 421 MB y checkpoint 26,4 MB, razonables frente a 12,98 GB disponibles. Es todavía un modelo de investigación muy pequeño y no hay evidencia de calidad hasta entrenar/evaluar con datos aprobados. No se seleccionó por generación de calidad, que no se pudo probar con corpus bloqueados.
 
-Para el corpus candidato actual hay 1,883,060 tokens BPE en train y 563,753 en validation. Con batch 4, contexto 128 y límite de 10.000 pasos se procesarían hasta 5,12 M posiciones objetivo (2,72 recorridos equivalentes sobre tokens train), aproximadamente 4,4 min a throughput sintético promedio, sin evaluación, checkpoints, preparación ni carga. La duración real será mayor; el coste completo no se ha medido ni debe usarse como promesa.
+Para el corpus candidato actual hay 1.883.060 tokens BPE en train y 563.753 en validation. Con `medium`, batch 4, contexto 128 y límite de 10.000 pasos se procesarían hasta 5,12 M posiciones objetivo (2,72 recorridos equivalentes) en unos 18 min a throughput sintético promedio. Las evaluaciones añaden hasta 1,64 M posiciones forward; SFT añade hasta 0,51 M posiciones de entrenamiento y 0,66 M de evaluación. Extrapolando a las mediciones CPU, la planificación es 30–50 min para ambas fases, incluyendo evaluaciones y checkpoints, pero sin garantía: no se midió una corrida completa, la carga/tokenización ni variación térmica; early stopping puede reducirlo. Recalcular con el benchmark local antes de iniciar.
 
 ## Configuración medida
 
-`configs/training.json`: vocabulario 2.048, d_model 64, 2 cabezas, 2 capas, FFN 256, contexto 128, batch 4, CPU/6 threads. AdamW a 3e-4, weight decay 0,1, gradient clip 1,0, evaluación/checkpoint cada 100 pasos y early stopping tras 8 evaluaciones sin mejora de al menos 0,001. SFT se ejecuta después con optimizador nuevo, LR 1e-4, máximo 1.000 pasos y evaluación cada 25 pasos; la elección final de SFT debe superar el gate de regresión. Son hiperparámetros piloto; no se han entrenado sobre corpus aprobado.
+`configs/training.json`: vocabulario 2.048, d_model 192, 6 cabezas, 4 capas, FFN 768, contexto 128, batch 4, CPU/6 threads. AdamW a 3e-4, weight decay 0,1, gradient clip 1,0, evaluación/checkpoint cada 100 pasos y early stopping tras 8 evaluaciones sin mejora de al menos 0,001. SFT usa optimizador nuevo, LR 1e-4, máximo 1.000 pasos y evaluación cada 25 pasos; el checkpoint solo se promociona si pasa la regresión configurada. Son parámetros conservadores de piloto, no receta de calidad demostrada.
+
+## Criterios conversacionales propuestos
+
+Antes de ejecutar, preparar y aprobar un test independiente de al menos 200 prompts humanos en español (no presentes en train/SFT) con categorías de explicación, seguimiento de instrucciones, resumen, escritura, diálogo, tareas cerradas verificables y abstención. Tres revisores puntúan a ciegas claridad, naturalidad, pertinencia, corrección y seguridad (1–5). Éxito de piloto: promedio ≥3,5/5 y ninguna categoría <3,0; ≥90% de exactitud en tareas cerradas; ≥80% de instrucciones seguidas; cero filtraciones de PII/señales peligrosas en la muestra; ninguna regresión >10% contra checkpoint pre-SFT. Reportar acuerdo entre revisores y ejemplos de fallos. Estos son umbrales de salida propuestos, no resultados ni evidencia de despliegue seguro; requieren aprobación humana y una política de revisión de errores.
 
 ## Registro y repetición
 
