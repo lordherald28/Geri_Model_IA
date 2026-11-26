@@ -1,14 +1,16 @@
 {
   "seed": 20261125,
   "max_download_bytes": 2500000,
-  "max_total_download_bytes": 15000000,
-  "max_pipeline_storage_bytes": 100000000,
+  "max_total_download_bytes": 25000000,
+  "max_pipeline_storage_bytes": 200000000,
   "min_free_disk_bytes": 1073741824,
+  "min_available_memory_bytes": 4294967296,
   "train_ratio": 0.9,
   "validation_ratio": 0.05,
   "test_ratio": 0.05,
   "min_characters": 80,
   "max_characters": 20000,
   "vocab_candidates": [256, 512, 1024, 2048],
-  "max_tokenizer_train_documents": 5000
+  "max_tokenizer_train_documents": 5000,
+  "max_tokenizer_runtime_seconds": 600
 }

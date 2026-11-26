@@ -12,7 +12,8 @@
       "source_page": "https://github.com/COST-ELTeC/ELTeC-spa/releases/tag/v0.9.1",
       "selection": "22 explicit level1 documents present in pinned v0.9.1 release; two v1 inventory paths absent from this release excluded; document-level deterministic split",
       "domain": "Spanish historical literary novels",
-      "quality_note": "Historical literary Spanish; transcription and encoding quality may vary; factuality and PII not established"
+      "quality_note": "Historical literary Spanish; transcription and encoding quality may vary; factuality and PII not established",
+      "review_status": "technical_source_selection_passed; human transcription-rights, quality and historical-name review pending"
       ,"documents": [
         "level1/SPA1024_FerandezYGonzalez_LossieteinfantesdeLara.xml",
         "level1/SPA3002_LeopoldoAlas_LaRegenta.xml",
@@ -36,6 +37,43 @@
         "level1/SPA1002_AlonsoDeAvecilla_LaConquistaDelPeru.xml",
         "level1/SPA1012_CarolinaCoronado_Jarilla.xml",
         "level1/SPA4014_Colombine_ElUltimoContrabandista.xml"
+      ]
+    },
+    {
+      "id": "boe_consolidated_20261125",
+      "type": "boe_xml_documents",
+      "filename": "boe-consolidated-selected-2026-11-25",
+      "license": "AEBOE standard reuse terms (Resolution 2024-06-27): commercial and non-commercial reuse, copying, adaptation, extraction and combination permitted subject to attribution, preservation of meaning, update date and explicit informational-only consolidation notice",
+      "license_url": "https://www.boe.es/informacion/aviso_legal/index.php?lang=es",
+      "attribution": "Basado en datos de la Agencia Estatal Boletín Oficial del Estado; textos consolidados de carácter meramente informativo",
+      "source_page": "https://www.boe.es/datosabiertos/api/api.php?lang=es",
+      "selection": "Four selected consolidated statutes from education, administrative procedure, science and climate; only latest version per block; all metadata state Finalizado at audit; consolidation is informative, not official legal advice",
+      "domain": "Spanish public law, education, science and climate policy",
+      "quality_note": "Authoritative legal source; human review required for current legal state and interpretation. Legal instruments may contain public official names; no citizen case files selected. Keep consolidated/informational label and source update timestamp with every row.",
+      "review_status": "technical_source_selection_passed; human legal-status, interpretation and public-name review pending",
+      "documents": [
+        {"id":"BOE-A-2006-7899","url":"https://www.boe.es/datosabiertos/api/legislacion-consolidada/id/BOE-A-2006-7899/texto","title":"Ley Orgánica 2/2006, de Educación","status":"Finalizado","last_updated":"20261124T090722Z","topic":"education"},
+        {"id":"BOE-A-2015-10565","url":"https://www.boe.es/datosabiertos/api/legislacion-consolidada/id/BOE-A-2015-10565/texto","title":"Ley 39/2015, del Procedimiento Administrativo Común","status":"Finalizado","last_updated":"20261119T090452Z","topic":"public administration and general knowledge"},
+        {"id":"BOE-A-2011-9617","url":"https://www.boe.es/datosabiertos/api/legislacion-consolidada/id/BOE-A-2011-9617/texto","title":"Ley 14/2011, de la Ciencia, la Tecnología y la Innovación","status":"Finalizado","last_updated":"20261123T112742Z","topic":"science and technology"},
+        {"id":"BOE-A-2021-8447","url":"https://www.boe.es/datosabiertos/api/legislacion-consolidada/id/BOE-A-2021-8447/texto","title":"Ley 7/2021, de cambio climático y transición energética","status":"Finalizado","last_updated":"20260723T094129Z","topic":"climate and energy"}
+      ]
+    },
+    {
+      "id": "cordis_results_es_2025",
+      "type": "cordis_html_documents",
+      "filename": "cordis-results-selected-es-2025",
+      "license": "Creative Commons Attribution 4.0 International (CC BY 4.0) for EU-owned editorial content, unless a page-specific notice states otherwise; third-party images excluded",
+      "license_url": "https://cordis.europa.eu/about/legal/es",
+      "attribution": "European Union, CORDIS Results Pack / Results in Brief; CC BY 4.0; Spanish text is Commission eTranslation machine translation from editorial content",
+      "source_page": "https://cordis.europa.eu/about/content/es",
+      "selection": "Three editorial articles on life sciences/AI, water management and biodiversity; Spanish versions are automatically translated; article content only, excluding images, project contacts and page navigation",
+      "domain": "Modern science, technology and environmental education",
+      "quality_note": "CORDIS says Results in Brief are written by its scientific authors with project participants and, where needed, Commission project officers. Claims are project-specific, not independent systematic reviews. Spanish machine translation and named public project coordinators require human language, factuality and PII review.",
+      "review_status": "technical_source_selection_passed; human translation-quality, factuality and named-person review pending",
+      "documents": [
+        {"id":"459569","url":"https://cordis.europa.eu/article/id/459569-how-ai-applications-are-facilitating-new-life-science-discoveries/es","title":"Cómo las aplicaciones de la inteligencia artificial facilitan nuevos descubrimientos en las ciencias de la vida","last_updated":"2025-06-27","topic":"science and AI"},
+        {"id":"459581","url":"https://cordis.europa.eu/article/id/459581-satellite-data-powers-water-use-compliance-monitoring/es","title":"Los datos satelitales facilitan la supervisión del cumplimiento en el uso del agua","last_updated":"2025-06-24","topic":"technology, climate and water"},
+        {"id":"459577","url":"https://cordis.europa.eu/article/id/459577-biodiversity-protection-through-innovative-decision-tools/es","title":"Nuevos mapas de inteligencia artificial ayudan a proteger la biodiversidad en todos los sectores","last_updated":"2025-06-24","topic":"science, AI and biodiversity"}
       ]
     }
   ]

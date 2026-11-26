@@ -1,53 +1,75 @@
 # Corpus preparation and tokenization
 
-## Source decisions
+## Source decisions (2026-11-25)
 
-The initial reproducible corpus uses 22 explicitly listed Spanish ELTeC-spa v0.9.1 XML novels. The collection states that all included texts are public domain and that the textual markup is CC BY 4.0. Provenance, collection/editor attribution and a link to the license are carried into every example and the manifest. The upstream release and collection are pinned in `configs/sources.json`; the exact acquired file hashes are in the generated manifest. ELTeC is historical literary Spanish and is not representative of contemporary regional usage. Transcription quality varies; factuality and personal data have not had human review. This corpus is suitable for a technical pipeline demonstration, not a claim of comprehensive legal or linguistic clearance.
+The corpus combines three source groups. Exact URLs, selection metadata, licensing terms, per-document update dates, and acquired-file hashes are recorded in `configs/sources.json` and the external corpus manifest.
 
-The v1 inventory was read-only audited. We did not copy prepared/segmented files, teacher reviewed examples, Tatoeba, or Wikimedia rows. Teacher reviewed examples lack individual provenance. The Tatoeba CC0 download contains only part of its sentences; the v1 source dump is about 41.9 MB, above this pipeline's 25 MB total-download cap, and cannot be treated as CC0 wholesale without row-level license checks. Wikimedia's CC BY-SA attribution/share-alike obligations require a separate distribution review. Two ELTeC paths in the v1 selected-document inventory are absent from pinned v0.9.1 and were excluded. Other selected novels were reacquired from the pinned primary source rather than copied from v1.
+| Source | Scope | Terms and review limits |
+|---|---|---|
+| COST ELTeC-spa v0.9.1, 22 novels | Historical literary Spanish | Text stated as public domain; TEI markup/metadata CC BY 4.0. Transcription rights/quality and historical personal names need human review. Pinned Git revision `6c0160ea2524cead72904b11992959748434aa57`. |
+| AEBOE consolidated API, 4 statutes | Education, public administration, science/technology, climate/energy | AEBOE standard reuse terms allow commercial/non-commercial reuse, extraction, adaptation and combination, subject to attribution, preserving meaning, date and an explicit informational-only consolidated-text notice. The API reported `Finalizado` at acquisition; snapshots retain `fecha_actualizacion`. Legal accuracy/current effect requires human review. |
+| CORDIS, 3 Results/Results in Brief articles | Life sciences and AI, water management, biodiversity | EU-owned editorial content defaults to CC BY 4.0; text only, no third-party images. CORDIS says Results in Brief are written by scientific authors with project participants and, where needed, a Commission project officer. Spanish pages are machine translations by Commission eTranslation; factual claims and named public coordinators require human review. |
 
-The selection contains copyright-sensitive dataset facts (release, file-level provenance, attribution and hashes); do not remove row-level attribution when exporting or redistributing. This is a technical compatibility assessment, not legal advice.
+CC BY-SA sources are excluded per user direction, including Wikipedia/CEDEC material and the mixed NOS_Científico package. The CSIC Spanish Corpus was excluded: its README states CC BY-NC-SA 4.0 and says it was not anonymized, despite the dataset record's conflicting license metadata. Common Crawl/OSCAR-derived and other mixed-license sets were excluded when rights could not be established at document level. Geri v1 data, tokenizers and weights were not reused.
 
-## Pipeline
+This is a technical license/provenance assessment, not a legal opinion about distributing model weights. Review the obligations again before any model release.
 
-Install with `python -m pip install -e ".[dev]"`. Data are written under `data/` by default; pass `--output` to place them elsewhere. The default `data/` path is rejected on a drive below the measured free-space threshold; on this machine D: has very little free space, so use an output path on C:. Before any acquisition the pipeline requires at least 1 GiB of free-space reserve plus the configured 100 MB total artifact cap. It limits each downloaded XML to 2.5 MB and all source downloads to 15 MB. These ceilings include roughly 23% per-file margin over the largest observed XML (2,039,678 bytes), 32% over the 11,360,637-byte source snapshot total, and approximately 2x over the observed full output (49,638,387 bytes). Acquisition uses atomic `.part` files, checks `Content-Length` and streamed size, and reuses cached source files. It checks final output size against the cap. `--offline` fails if any pinned source snapshot is missing. The source URL uses immutable Git commit `6c0160ea2524cead72904b11992959748434aa57`.
+## Pipeline and reproducibility
+
+Install with `python -m pip install -e ".[dev]"`. The CLI defaults to `C:\geri2-corpus`; pass `--output` explicitly to select another volume. Raw source snapshots, processed splits, manifests and tokenizer artifacts stay outside Git. The project remains in its existing D: checkout; no project or user files were moved or deleted.
 
 ```powershell
-geri-data prepare --source eltec_spa_v0.9.1 --output C:\geri2-corpus
+geri-data prepare --offline --output C:\geri2-corpus
 geri-data validate --output C:\geri2-corpus
 geri-data tokenizer --output C:\geri2-corpus
 geri-data offline-check --output C:\geri2-corpus
 ```
 
-Preparation decodes HTML entities, removes BOM/soft hyphen, applies Unicode NFC and collapses whitespace. It extracts TEI paragraph/head/line text, splits sentences deterministically, filters lengths, URLs, control/replacement characters and low alphabetic ratios, and deduplicates case-insensitive normalized text. It records reject counts and text/document hashes. Documents are assigned whole to train/validation/test using seed 20261125; there is no sentence-level split across a novel. The validator checks artifact hashes, required provenance, split membership, document isolation and cross-split exact duplicates.
+The source adapters acquire fixed ELTeC XML, consolidated BOE XML and selected CORDIS HTML. BOE extraction keeps the most recent version per text block. CORDIS extraction keeps article headings, teaser and editorial paragraphs, excluding navigation, project contacts and images. Normalization applies HTML entity decoding, removes BOM/soft hyphen, NFC and whitespace collapse; segmentation is deterministic. Quality filters log too-short text, long text, URLs, controls/replacement characters and low letter ratio. Deduplication is case-insensitive at normalized sentence level; duplicate provenance is retained. Documents are split before sentence use and never cross partitions; splits are stratified within each source group.
 
-The byte-level BPE is trained on all accepted training sentences grouped by training document. It is not loaded from Geri v1. Candidate vocabularies 256, 512, 1024 and 2048 are measured; selection uses lowest validation tokens per character. Test is never used for tokenizer selection. The generated tokenizer and metrics are self-contained; offline-check blocks network entry points and exercises loading/encoding from the frozen test artifact.
+The manifest records source URLs, terms, dates/statuses, hashes, row counts, split/document hashes, theme distribution, quality findings and resource preflight. The PII screen checks email, Spanish DNI/NIE and common phone formats; it is not a named-entity or contextual privacy detector. An offline check blocks the pipeline's network entry points, verifies original source snapshot and processed corpus hashes, and loads/encodes with the frozen tokenizer.
 
-## Measured run (2026-11-25)
+## Measured corpus
 
-Output was kept outside Git on C: because D: had approximately 96 MiB free. The 22 pinned XML snapshots occupied 11,360,637 bytes. The generated processed corpus occupies 38,038,110 bytes, plus tokenizer artifacts. Input was 102,900 sentence candidates; 44,271 were accepted and 15 exact duplicates removed. Rejection reason counts were 58,614 too short and 257 with low letter ratio; reason counts can overlap. The split contains 32,503 train rows (19 novels), 7,978 validation rows (1 novel), and 3,790 test rows (2 novels). The small number of validation/test documents makes these measurements noisy and strongly domain-specific.
+Prepared from locally cached snapshots on 2026-11-25; the reproducibility rerun used `--offline` and downloaded 0 bytes.
 
-## Current resource preflight (2026-11-25)
+| Split | Rows | Documents | BPE tokens (2,048) | Characters | Whitespace words |
+|---|---:|---:|---:|---:|---:|
+| Train | 34,117 | 22 | 1,883,060 | 5,931,900 | 1,040,842 |
+| Validation | 9,156 | 3 | 563,753 | 1,707,724 | 291,862 |
+| Test | 5,675 | 4 | 402,290 | 1,227,115 | 204,494 |
+| **Total** | **48,948** | **29** | **2,849,103** | **8,866,739** | **1,537,198** |
 
-At follow-up, Windows reported a Ryzen 5 7530U (6 cores/12 logical processors), 31.35 GiB installed memory and 12.51 GiB available physical memory. C: had 192.45 GiB free, D: 26.19 MiB, and E: 2.15 GiB. The existing corpus occupies 49,638,387 bytes. The pipeline therefore sets the download/output ceilings above, keeps a 1 GiB free-space reserve and rejects an output volume without reserve plus the 100 MB artifact allowance. Corpus acquisition was not repeated during this preflight. GPU availability was not relied upon; the data pipeline is CPU-only.
+There are 119,303 distinct case-folded whitespace-delimited word forms across the corpus (type/token ratio 0.0776). By prepared rows, historical ELTeC novels supply 44,271 (90.45%), BOE 4,602 (9.40%), and CORDIS 75 (0.15%). By BPE tokens they supply 2,473,714 (86.83%), 369,590 (12.97%), and 5,799 (0.20%) respectively. The added scientific/technical source is useful for pipeline coverage but far too small to balance the corpus; contemporary general Spanish, broad education and technical/scientific prose remain underrepresented.
 
-| Vocabulary | Actual size | Train chars/token | Validation tokens/char |
-|---:|---:|---:|---:|
-| 256 | 256 | 1.84 | 0.549 |
-| 512 | 512 | 2.29 | 0.438 |
-| 1024 | 1024 | 2.71 | 0.373 |
-| 2048 | 2048 | 3.12 | 0.328 |
+Input contained 112,034 sentence candidates. The pipeline accepted 48,948, removed 53 exact duplicates, and rejected 63,033 for length and 2,130 for letter ratio (reason counts can overlap). The pattern screen found 0 email, 0 phone and 0 DNI/NIE matches. The articles do include public project coordinator names; contextual/name review remains pending. ELTeC also needs human review for transcription quality, rights of individual transcriptions and historical personal names. BOE excerpts are informational consolidated legal texts, not authoritative legal advice; reviewers should confirm update state and avoid claims that they are official versions.
 
-The measured selection is 2048 tokens; this is a measurement-based choice among the configured candidates, not a claim that it is optimal for a larger or more varied corpus. Full counts, configuration, license/provenance, per-file hashes, output hashes, and tokenization measurements are in generated `processed/manifest.json` and `tokenizer/metrics.json`.
+## Tokenizer measurement
 
-## Validation and limits
+Byte-level BPE was trained only on 22 train documents and measured on all 9,156 validation rows across 3 documents. Test was excluded from selection. Row-level train/validation measurements:
 
-- Focused automated tests: `3 passed`.
-- Corpus validation: passed, 44,271 unique text rows across 22 documents; all three outputs matched their recorded SHA-256 values and document splits were disjoint.
-- Offline check: passed with network access blocked; all corpus hashes verified and tokenizer loaded and encoded a test row (157 tokens).
-- No model training, weights, checkpoints, or Geri v1 files were used or changed.
-- Automatic checks do not establish factual correctness, human reading quality, PII absence, license ownership of every underlying public-domain transcription, or broad Spanish coverage. Review these before expanding or distributing a trained model. Test/test leakage checks cover exact normalized duplicates; fuzzy cross-source contamination requires additional sources and review.
+| Vocabulary | Train tokens | Train chars/token | Validation tokens | Validation tokens/char |
+|---:|---:|---:|---:|---:|
+| 256 | 3,230,232 | 1.84 | 941,636 | 0.55140 |
+| 512 | 2,574,051 | 2.30 | 754,043 | 0.44155 |
+| 1,024 | 2,179,376 | 2.72 | 642,893 | 0.37646 |
+| 2,048 | 1,883,060 | 3.15 | 563,753 | 0.33012 |
 
-## Commands
+The selected vocabulary remains 2,048, the best among tested candidates. It yields 3.15 characters per token on training text. The four-candidate CPU run took 29.374 seconds against a 600-second ceiling. Validation is source-stratified but small (one document per source), so these are tokenizer compression measurements, not broad linguistic generalization evidence. The test set was not used to select the vocabulary.
 
-Run tests from the repository root with `python -m pytest -q`. To reproduce from already acquired files without network, run `geri-data prepare --source eltec_spa_v0.9.1 --offline --output C:\geri2-corpus`, followed by validate, tokenizer, and offline-check. The tokenizer vocabulary is selected by validation compression, so the configuration and exact corpus snapshot must remain fixed for a reproducible result.
+## Resources and operating limits
+
+The project was left on D: and artifacts on C:, without moving/deleting files. At the latest run preflight, C: had about 192.4 GiB free, D: about 43.4 GiB free and available physical RAM was 11.3 GiB; the machine reports a Ryzen 5 7530U (6 cores/12 threads) and 31.35 GiB RAM. Pipeline limits: 2.5 MB per downloaded file, 25 MB total source-download budget, 200 MB total artifact cap, 1 GiB free-space reserve, 4 GiB minimum available RAM, 5,000 tokenizer training documents, four BPE candidates and a 600-second CPU-time limit. The current C: corpus occupies about 87.3 MB; its raw snapshots total 14,127,903 bytes. Tokenizer fitting is CPU-only and used 22 documents; no GPU or model training is involved.
+
+These limits leave roughly 2.3x headroom over present artifacts and 1.8x over a complete source-snapshot acquisition. The runtime guard rejects insufficient RAM/disk, and final artifact size is checked against its cap. The source budget prevents accidentally fetching large dumps. Current workspace measurements should be repeated before any corpus expansion because free space and RAM availability can change.
+
+## Validation results and remaining review
+
+- Focused tests: 7 passed, including latest BOE version extraction, CORDIS article-only extraction, PII-pattern detection and disk/RAM guard behavior.
+- Corpus validation: passed; 48,948 unique accepted rows, 29 source documents, disjoint document splits and verified processed-file hashes.
+- Offline verification: passed with network entry points blocked; corpus files and tokenizer loaded locally.
+- Source acquisition: 7 additional source snapshots fetched within limits; subsequent offline rebuild downloaded 0 bytes.
+- No Geri v1 files, checkpoints or weights were modified or reused; model training was not run.
+- Human review still needed for ELTeC transcription rights/quality and personal names; BOE legal update/interpretation; CORDIS machine-translation quality, factual claims and named public coordinators. Broad contemporary Spanish and a larger education/general-knowledge corpus remain open coverage gaps.
+
+Generated exact counts, per-domain/per-split measurements, source hashes and tokenizer SHA-256 are in the external files `C:\geri2-corpus\processed\manifest.json` and `C:\geri2-corpus\tokenizer\metrics.json`.

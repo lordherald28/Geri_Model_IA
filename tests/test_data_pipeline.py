@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from geri.data.pipeline import _check_capacity, normalize, quality_reasons, sha256, validate
+from geri.data.pipeline import _boe_latest_text, _check_capacity, _cordis_text, normalize, pii_findings, quality_reasons, sha256, validate
 
 
 def test_normalization_is_unicode_nfc_and_collapses_space():
@@ -41,3 +41,32 @@ def test_capacity_guard_preserves_configured_reserve(tmp_path: Path, monkeypatch
         _check_capacity(tmp_path / "output", config)
     monkeypatch.setattr("geri.data.pipeline.shutil.disk_usage", lambda _: SimpleNamespace(free=1200))
     _check_capacity(tmp_path / "output", config)
+
+
+def test_capacity_guard_enforces_available_ram(tmp_path: Path, monkeypatch):
+    config = {"min_free_disk_bytes": 0, "max_pipeline_storage_bytes": 0, "min_available_memory_bytes": 1000}
+    monkeypatch.setattr("geri.data.pipeline._available_memory_bytes", lambda: 999)
+    with pytest.raises(OSError, match="insufficient available RAM"):
+        _check_capacity(tmp_path / "output", config)
+
+
+def test_boe_extractor_keeps_latest_version_per_block(tmp_path: Path):
+    path = tmp_path / "law.xml"
+    path.write_text("""<response><data><texto><bloque id='a'>
+      <version fecha_publicacion='20200101'><p>Texto anterior vigente.</p></version>
+      <version fecha_publicacion='20240101'><p>Texto consolidado actual.</p></version>
+    </bloque></texto></data></response>""", encoding="utf-8")
+    assert _boe_latest_text(path) == "Texto consolidado actual."
+
+
+def test_cordis_extractor_keeps_article_body_and_discards_page_chrome(tmp_path: Path):
+    path = tmp_path / "article.html"
+    path.write_text("""<main id='c-main'><h1>Título científico</h1>
+      <p class='c-teaser'>Resumen editorial.</p>
+      <p class='c-article__text'>Texto con <b>formato</b>.</p>
+      <footer>Enlaces y navegación ignorados.</footer></main>""", encoding="utf-8")
+    assert _cordis_text(path) == "Título científico\nResumen editorial.\nTexto con formato."
+
+
+def test_pii_pattern_screen_detects_contact_identifiers():
+    assert set(pii_findings("Escribe a persona@example.org o llama al +34 612 345 678; DNI 12345678Z")) == {"email", "phone", "dni_nie"}

@@ -4,7 +4,7 @@ Proyecto de investigación para construir un modelo de lenguaje en español con 
 
 ## Estado
 
-Fase de preparación de datos — pipeline, corpus inicial validado y tokenizador medido. No se inicia entrenamiento del modelo en esta fase.
+Fase de preparación de datos — corpus ampliado, validación técnica/offline y tokenizador medido. Las revisiones humanas de licencias/calidad por fuente siguen pendientes; no se inicia entrenamiento del modelo en esta fase.
 
 ## Mapa
 
@@ -21,6 +21,6 @@ Fase de preparación de datos — pipeline, corpus inicial validado y tokenizado
 
 ## Principios
 
-Geri (proyecto anterior) es referencia de solo lectura. No se reutilizan sus pesos, tokenizadores ni checkpoints. El flujo de entrenamiento no depende de red ni de servicios externos. El corpus y tokenizador iniciales están medidos; la revisión humana y las decisiones de arquitectura/entrenamiento siguen pendientes.
+Geri (proyecto anterior) es referencia de solo lectura. No se reutilizan sus pesos, tokenizadores ni checkpoints. El flujo de entrenamiento no depende de red ni de servicios externos. El corpus candidato ampliado y el tokenizador actual están medidos; la revisión humana y las decisiones de arquitectura/entrenamiento siguen pendientes.
 
 Consultar [pipeline y resultados medidos](docs/data-pipeline.md), [arquitectura y decisiones](docs/architecture.md), [gobierno de datos](docs/data-governance.md), [metodología](docs/methodology.md), [benchmarks](docs/benchmarks.md) y [hoja de ruta](docs/roadmap.md).

@@ -11,7 +11,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(prog="geri-data", description="Prepare and audit the approved Geri 2.0 Spanish corpus")
     parser.add_argument("command", choices=["prepare", "validate", "tokenizer", "offline-check"])
     parser.add_argument("--config", type=Path, default=Path("configs/data-pipeline.json"))
-    parser.add_argument("--output", type=Path, default=Path("data"))
+    parser.add_argument("--output", type=Path, default=Path("C:/geri2-corpus"))
     parser.add_argument("--source", action="append", dest="sources")
     parser.add_argument("--offline", action="store_true")
     args = parser.parse_args()

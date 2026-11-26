@@ -2,7 +2,7 @@
 
 ## Equipo observado en esta sesión
 
-Windows, AMD Ryzen 5 7530U, 6 núcleos/12 hilos, 31,4 GiB RAM. En esta sesión D: reportó aproximadamente 0,1 GiB libres y C: 192,7 GiB libres. No se inspeccionó GPU dedicada y no se asume acelerador disponible. El almacenamiento debe medirse de nuevo en el destino elegido antes de cualquier descarga o entrenamiento.
+Windows, AMD Ryzen 5 7530U, 6 núcleos/12 hilos, 31,35 GiB RAM. En el preflight del 25-11-2026 C: reportó 192,4 GiB libres, D: 43,4 GiB libres y 11,3 GiB de RAM física disponible. Se conservaron el proyecto en D: y los artefactos de datos en C:; no se movieron ni eliminaron archivos. No se inspeccionó GPU dedicada y no se asume acelerador disponible. El almacenamiento y la RAM disponible deben medirse de nuevo antes de cada expansión o entrenamiento.
 
 ## Protocolo antes de elegir tamaño
 
@@ -23,4 +23,4 @@ Windows, AMD Ryzen 5 7530U, 6 núcleos/12 hilos, 31,4 GiB RAM. En esta sesión D
 
 ## Resultados pendientes
 
-No se ejecutó benchmark ni se instaló software. Falta fijar presupuesto de horas/energía y ubicación de almacenamiento. No se recomienda tamaño de modelo hasta obtener rendimiento medido y tamaño/calidad del corpus autorizado.
+No se ejecutó entrenamiento ni benchmark de rendimiento de modelo. El benchmark de preparación y tokenizador (CPU) está en [pipeline y resultados](data-pipeline.md). Falta fijar presupuesto de horas/energía para cualquier entrenamiento y rendimiento del modelo. No se recomienda tamaño de modelo hasta completar esas mediciones y las revisiones humanas del corpus.

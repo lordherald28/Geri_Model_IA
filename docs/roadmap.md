@@ -4,17 +4,17 @@
 
 Establecer repositorio, límites de solo lectura, arquitectura, gobierno de datos, metodología, protocolo de dimensionamiento y decisiones pendientes. Cierre: documentación revisable y Git inicializado; sin descargas ni entrenamiento.
 
-## Fase 2 — auditoría de corpus (pipeline técnico completado; revisión humana pendiente)
+## Fase 2 — auditoría de corpus (pipeline técnico y ampliación inicial completados; revisión humana pendiente)
 
-Se implementó el pipeline y corpus inicial ELTeC-spa v0.9.1; véase [resultados](data-pipeline.md). La revisión humana de calidad, factualidad, PII y derechos de las transcripciones sigue pendiente. No ampliar fuentes hasta cerrar esas revisiones.
+Se implementó el pipeline, se auditaron las fuentes de Geri v1 y se preparó una selección ELTeC, BOE y CORDIS; véase [resultados](data-pipeline.md). La revisión humana de derechos/transcripciones, traducción automática, factualidad y PII sigue pendiente. Completarla antes de ampliar el corpus o distribuir modelos.
 
 ## Fase 3 — perfilado y especificación
 
 Acordar presupuesto computacional, benchmark de preparación/tokenización/modelo pequeño desechable y criterios de viabilidad. Elegir contratos de datos, tokenizador y estrategia experimental sin comprometer entrenamiento prolongado.
 
-## Fase 4 — pipeline reproducible
+## Fase 4 — pipeline reproducible (adquisición, preparación, tokenización y verificación offline completadas)
 
-Implementar adquisición/preparación online aislada y verificación offline. Congelar corpus aprobado, entrenar tokenizador desde cero y validar integridad, fugas y reproducibilidad.
+El pipeline actual cumple la preparación y verificación técnica; revisión humana y aprobación del corpus permanecen pendientes antes de cualquier entrenamiento. Repetir hashes y offline-check al cambiar corpus o fuentes.
 
 ## Fase 5 — experimentos controlados
 
