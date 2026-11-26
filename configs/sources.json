@@ -1,0 +1,41 @@
+{
+  "sources": [
+    {
+      "id": "eltec_spa_v0.9.1",
+      "type": "eltec_files",
+      "url_template": "https://raw.githubusercontent.com/COST-ELTeC/ELTeC-spa/v0.9.1/{path}",
+      "filename": "eltec-spa-v0.9.1-selected-22",
+      "license": "Public-domain novel text; ELTeC TEI markup and metadata CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "attribution": "COST Action Distant Reading for European Literary History; collection editor Borja Navarro Colorado; https://doi.org/10.5281/zenodo.4662603",
+      "source_page": "https://github.com/COST-ELTeC/ELTeC-spa/releases/tag/v0.9.1",
+      "selection": "22 explicit level1 documents present in pinned v0.9.1 release; two v1 inventory paths absent from this release excluded; document-level deterministic split",
+      "domain": "Spanish historical literary novels",
+      "quality_note": "Historical literary Spanish; transcription and encoding quality may vary; factuality and PII not established"
+      ,"documents": [
+        "level1/SPA1024_FerandezYGonzalez_LossieteinfantesdeLara.xml",
+        "level1/SPA3002_LeopoldoAlas_LaRegenta.xml",
+        "level1/SPA2009_PerezGaldos_Marianela.xml",
+        "level1/SPA1004_Foz_VidaDePedroSaputo.xml",
+        "level1/SPA3011_Asensi_SantiagoArabal.xml",
+        "level1/SPA1023_GomezDeAvellaneda_LaVeladaDelHelecho.xml",
+        "level1/SPA4019_Bobadilla_AFuegoLento.xml",
+        "level1/SPA1009_RosDeOlano_ElDiabloLasCarga.xml",
+        "level1/SPA2012_Altadill_BarcelonaYsusMisterios.xml",
+        "level1/SPA3020_PalacioValdes_Maximina.xml",
+        "level1/SPA4001_TrigoFelipe_ATodoHonor.xml",
+        "level1/SPA3007_Pereda_Sotileza.xml",
+        "level1/SPA4003_Unamuno_Niebla.xml",
+        "level1/SPA1016_ManuelTorrijos_LaInfantaDonyaTeresa.xml",
+        "level1/SPA2005_Alarcon_ElSombreroDeTresPicos.xml",
+        "level1/SPA3009_BlascoIbanez_ArrozyTartana.xml",
+        "level1/SPA4009_ValleInclan_SonataOtonyo.xml",
+        "level1/SPA3023_OrtegaMunilla_DonJuanSolo.xml",
+        "level1/SPA4008_Ciges_Vicario.xml",
+        "level1/SPA1002_AlonsoDeAvecilla_LaConquistaDelPeru.xml",
+        "level1/SPA1012_CarolinaCoronado_Jarilla.xml",
+        "level1/SPA4014_Colombine_ElUltimoContrabandista.xml"
+      ]
+    }
+  ]
+}

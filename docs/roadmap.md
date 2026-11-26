@@ -4,9 +4,9 @@
 
 Establecer repositorio, límites de solo lectura, arquitectura, gobierno de datos, metodología, protocolo de dimensionamiento y decisiones pendientes. Cierre: documentación revisable y Git inicializado; sin descargas ni entrenamiento.
 
-## Fase 2 — auditoría de corpus
+## Fase 2 — auditoría de corpus (pipeline técnico completado; revisión humana pendiente)
 
-Completar inventario fuente por fuente, verificar licencias/procedencia, revisar calidad y veracidad con muestreo documentado, detectar PII, duplicados y fugas. Aprobar o excluir explícitamente cada fuente. No iniciar adquisición de datos nuevos sin definir fuentes y condiciones.
+Se implementó el pipeline y corpus inicial ELTeC-spa v0.9.1; véase [resultados](data-pipeline.md). La revisión humana de calidad, factualidad, PII y derechos de las transcripciones sigue pendiente. No ampliar fuentes hasta cerrar esas revisiones.
 
 ## Fase 3 — perfilado y especificación
 

@@ -1,0 +1,12 @@
+{
+  "seed": 20261125,
+  "max_download_bytes": 25000000,
+  "max_total_download_bytes": 25000000,
+  "train_ratio": 0.9,
+  "validation_ratio": 0.05,
+  "test_ratio": 0.05,
+  "min_characters": 80,
+  "max_characters": 20000,
+  "vocab_candidates": [256, 512, 1024, 2048],
+  "max_tokenizer_train_documents": 5000
+}

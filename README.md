@@ -1,15 +1,15 @@
 # Geri 2.0
 
-Proyecto de investigación para construir un modelo de lenguaje en español con preparación de datos conectada y entrenamiento reproducible sin conexión. La fase actual establece arquitectura, metodología y criterios; no contiene pesos ni tokenizador heredados.
+Proyecto de investigación para construir un modelo de lenguaje en español con adquisición controlada de datos y preparación reproducible sin conexión. El pipeline prepara un corpus ELTeC auditado por documento y ajusta un tokenizador BPE nuevo; no contiene pesos ni tokenizador heredados.
 
 ## Estado
 
-Fase 1 — inicialización y diseño. No se descargan datos ni se ejecuta entrenamiento en esta fase.
+Fase de preparación de datos — pipeline, corpus inicial validado y tokenizador medido. No se inicia entrenamiento del modelo en esta fase.
 
 ## Mapa
 
 - `docs/`: arquitectura, datos, metodología, benchmarks y hoja de ruta.
-- `src/geri/data/`: futura adquisición controlada, auditoría y preparación de corpus.
+- `src/geri/data/`: adquisición limitada, auditoría, preparación y validación del corpus.
 - `src/geri/tokenization/`: futura especificación y entrenamiento de tokenizador desde cero.
 - `src/geri/model/`: futura implementación del modelo desde inicialización aleatoria.
 - `src/geri/training/`: futuro entrenamiento offline, checkpoints y reanudación.
@@ -21,6 +21,6 @@ Fase 1 — inicialización y diseño. No se descargan datos ni se ejecuta entren
 
 ## Principios
 
-Geri (proyecto anterior) es referencia de solo lectura. No se reutilizan sus pesos, tokenizadores ni checkpoints. El flujo de entrenamiento no depende de red ni de servicios externos. Las decisiones cuantitativas se posponen hasta medir capacidad y aprobar un corpus utilizable.
+Geri (proyecto anterior) es referencia de solo lectura. No se reutilizan sus pesos, tokenizadores ni checkpoints. El flujo de entrenamiento no depende de red ni de servicios externos. El corpus y tokenizador iniciales están medidos; la revisión humana y las decisiones de arquitectura/entrenamiento siguen pendientes.
 
-Consultar [arquitectura y decisiones](docs/architecture.md), [datos](docs/data-governance.md), [metodología](docs/methodology.md), [benchmarks](docs/benchmarks.md) y [hoja de ruta](docs/roadmap.md).
+Consultar [pipeline y resultados medidos](docs/data-pipeline.md), [arquitectura y decisiones](docs/architecture.md), [gobierno de datos](docs/data-governance.md), [metodología](docs/methodology.md), [benchmarks](docs/benchmarks.md) y [hoja de ruta](docs/roadmap.md).

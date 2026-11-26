@@ -4,9 +4,9 @@
 
 La lectura del manifiesto de solo lectura `../Geri/data/raw_sources/manifest.json` identifica Tatoeba `sentences_CC0` (34 registros, CC0 1.0), ELTeC-spa (111.842 ejemplos; textos indicados como dominio público y metadatos TEI CC BY 4.0) y Wikimedia en español (340 filas; CC BY-SA 4.0 con atribución, enlace a licencia e indicación de transformaciones por página). El corpus educativo procesado mezcla estas fuentes con ejemplos `teacher_reviewed_v1`; para esos ejemplos no se encontró procedencia/licencia individual suficiente en el manifiesto revisado. La inspección fue documental y agregada; no validó cada texto ni cada aviso legal en el sitio fuente.
 
-Estos datos son un inventario, no una aprobación para reuso. Calidad/veracidad no quedan demostradas por procedencia o licencia. ELTeC contiene literatura histórica, útil para registro lingüístico pero no representativa por sí sola del español contemporáneo. El corpus técnico de Wikimedia es pequeño. La asignación de niveles documenta reglas por longitud/marcadores gramaticales; es una etiqueta heurística, no garantía de dificultad o corrección. El test separado por obra es un control útil, pero se debe probar también duplicación y contaminación entre fuentes/versiones.
+La implementación inicial admite solo 22 documentos ELTeC-spa v0.9.1, fijados por ruta y hash; se excluyeron dos rutas del inventario v1 que no existen en esa release. La adquisición y validación técnica real se documentan en [pipeline y resultados](data-pipeline.md). Procedencia/licencia no demuestran calidad o veracidad. ELTeC contiene literatura histórica, no representativa por sí sola del español contemporáneo. La inspección humana de calidad, factualidad, PII y derechos de transcripción sigue pendiente.
 
-No se copió contenido al nuevo proyecto. El registro `progress_v3_disk_full.json` en Geri incluye la etiqueta de fallo `disk_full`; es un antecedente operativo, no una medición del espacio disponible actual.
+No se copiaron los archivos preparados de Geri v1, pesos ni tokenizadores. Se usó el manifiesto v1 como inventario y se volvió a adquirir una selección desde la release primaria aprobada técnicamente. El registro `progress_v3_disk_full.json` en Geri incluye la etiqueta de fallo `disk_full`; es un antecedente operativo, no una medición del espacio disponible actual.
 
 ## Contrato mínimo de fuente
 
@@ -22,8 +22,8 @@ Antes de admitir cualquier fuente registrar: identificador y URL; fecha y métod
 
 ## Flujo online de preparación
 
-La adquisición online es una tarea explícita de preparación, no parte del proceso de entrenamiento: descargar únicamente fuentes aprobadas, guardar snapshot/licencia, validar hashes y ejecutar transformaciones deterministas. Generar manifiesto y reporte de calidad. Revisar artefactos antes de transferirlos a un medio local de solo lectura. Tras la transferencia, desactivar red y verificar hashes antes de tokenizar/entrenar. Las credenciales nunca se guardan en manifiestos.
+La adquisición online es una tarea explícita de preparación, no parte del proceso de entrenamiento: descargar únicamente fuentes fijadas, limitar tamaño, guardar snapshot/licencia, validar hashes y ejecutar transformaciones deterministas. Generar manifiesto y reporte de calidad. Revisar artefactos antes de transferirlos a un medio local de solo lectura. Tras la transferencia, desactivar red y verificar hashes antes de tokenizar/entrenar. Las credenciales nunca se guardan en manifiestos.
 
 ## Pendiente
 
-Auditar el inventario íntegro por cada fila/obra y fuente original; confirmar licencia de ejemplos revisados por docente, derechos de ediciones digitales y condiciones de cualquier diálogo; inspeccionar posibles PII, duplicados, calidad factual y contaminación. No se ha emitido dictamen legal.
+Pendiente: revisión humana por obra y verificación de derechos de transcripciones; muestreo de calidad/factualidad y PII. Ejemplos docentes, Tatoeba y Wikimedia permanecen excluidos. No se ha emitido dictamen legal ni se debe inferir clearance de distribución de un modelo a partir de esta aprobación técnica.
