@@ -27,7 +27,7 @@ Antes de ejecutar, preparar y aprobar un test independiente de al menos 200 prom
 ## Registro y repetición
 
 ```powershell
-python -m geri.training.cli benchmark --config configs/training.json --output C:\geri2-training-bench --benchmark-steps 30 --benchmark-repeats 3
+python -m geri.training.cli benchmark --config configs/training.json --output C:\Geriv2-Data\benchmarks\training-engine --benchmark-steps 30 --benchmark-repeats 3
 ```
 
 El benchmark informa versiones, hilos, RAM disponible, RSS, tiempo por paso, tokens/s y tamaño de checkpoint. Los logs de entrenamiento registran pérdida train/validation, grad norm, tiempo transcurrido/restante estimado, tokens/s, RSS, RAM libre y disco libre por intervalo. Energy/thermal no se midieron.

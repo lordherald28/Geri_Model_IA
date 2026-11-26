@@ -23,6 +23,8 @@ PyTorch 2.15.0+cpu y tokenizers 0.23.3 se reutilizaron desde el entorno local co
 
 Flujo manual, preparación SFT y comando PowerShell: [motor de entrenamiento](docs/training-engine.md). El benchmark de selección está en [benchmarks](docs/benchmarks.md). No ejecutar `scripts\Train-Geri.ps1` hasta que ambos manifests indiquen aprobación humana explícita.
 
+Los datos, artefactos de prueba y salidas de entrenamiento se centralizan fuera del repositorio en `C:\Geriv2-Data\`; el mapa está en [datos y reproducibilidad](docs/data-pipeline.md).
+
 ## Principios
 
 Geri (proyecto anterior) es referencia de solo lectura. No se reutilizan sus datos, pesos, tokenizadores ni checkpoints. El flujo de entrenamiento no depende de red ni de servicios externos; la CPU usa la instalación PyTorch existente. El corpus y la licencia siguen pendientes de aprobación humana; la arquitectura es solo una configuración piloto dimensionada por microbenchmark.

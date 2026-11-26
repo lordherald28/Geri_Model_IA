@@ -16,13 +16,24 @@ This is a technical license/provenance assessment, not a legal opinion about dis
 
 ## Pipeline and reproducibility
 
-Install with `python -m pip install -e ".[dev]"`. The CLI defaults to `C:\geri2-corpus`; pass `--output` explicitly to select another volume. Raw source snapshots, processed splits, manifests and tokenizer artifacts stay outside Git. The project remains in its existing D: checkout; no project or user files were moved or deleted.
+Install with `python -m pip install -e ".[dev]"`. The CLI defaults to `C:\Geriv2-Data\corpus\pretraining`; pass `--output` explicitly to select another volume. Raw source snapshots, processed splits, manifests and tokenizer artifacts stay outside Git. Training, SFT, benchmark and smoke-test artifacts are organized alongside it under `C:\Geriv2-Data\`.
+
+| Uso | Directorio |
+|---|---|
+| Corpus y tokenizador de preentrenamiento | `C:\Geriv2-Data\corpus\pretraining` |
+| Candidato y revisión SFT | `C:\Geriv2-Data\sft\candidate` |
+| Snapshot OASST1 y entrada reproducible | `C:\Geriv2-Data\sft\source-workspace` |
+| Benchmarks CPU/entrenamiento | `C:\Geriv2-Data\benchmarks` |
+| Fixtures, recuperaciones smoke y utilidades de auditoría | `C:\Geriv2-Data\tests` |
+| Checkpoints y métricas de corridas manuales futuras | `C:\Geriv2-Data\training\runs` |
+
+La migración conservó contenido y SHA-256 (véase `C:\Geriv2-Data\migration-manifest.json`); los manifests externos ahora apuntan a las muestras humanas bajo el nuevo directorio. La copia central pasó las validaciones offline. Windows permitió retirar 11 directorios antiguos, pero mantiene ocupado `C:\geri2-corpus`; la copia original se conserva íntegra y el destino ya fue verificado. Tras cerrar el proceso/aplicación que lo mantiene abierto, ejecutar `scripts\Finalize-Geri2DataMigration.ps1` para retirar ese último directorio duplicado y completar la limpieza.
 
 ```powershell
-geri-data prepare --offline --output C:\geri2-corpus
-geri-data validate --output C:\geri2-corpus
-geri-data tokenizer --output C:\geri2-corpus
-geri-data offline-check --output C:\geri2-corpus
+geri-data prepare --offline --output C:\Geriv2-Data\corpus\pretraining
+geri-data validate --output C:\Geriv2-Data\corpus\pretraining
+geri-data tokenizer --output C:\Geriv2-Data\corpus\pretraining
+geri-data offline-check --output C:\Geriv2-Data\corpus\pretraining
 ```
 
 The source adapters acquire fixed ELTeC XML, consolidated BOE XML and selected CORDIS HTML. BOE extraction keeps the most recent version per text block. CORDIS extraction keeps article headings, teaser and editorial paragraphs, excluding navigation, project contacts and images. Normalization applies HTML entity decoding, removes BOM/soft hyphen, NFC and whitespace collapse; segmentation is deterministic. Quality filters log too-short text, long text, URLs, controls/replacement characters and low letter ratio. Deduplication is case-insensitive at normalized sentence level; duplicate provenance is retained. Documents are split before sentence use and never cross partitions; splits are stratified within each source group.
@@ -71,6 +82,6 @@ These limits leave roughly 2.9x headroom over present artifacts and 1.8x over a 
 - Source acquisition: 7 additional source snapshots fetched within limits; subsequent offline rebuild downloaded 0 bytes.
 - No Geri v1 files, checkpoints or weights were modified or reused; model training was not run.
 - Human review still needed for ELTeC transcription rights/quality and personal names; BOE legal update/interpretation; CORDIS machine-translation quality, factual claims and named public coordinators. Broad contemporary Spanish and a larger education/general-knowledge corpus remain open coverage gaps.
-- Current review aid: `C:\geri2-corpus\review\human_review_sample.jsonl`, 29 deterministic source/document examples (22 ELTeC works, 4 BOE texts, 3 CORDIS articles); SHA-256 and pending decision list are recorded in the external corpus manifest. The full corpus scan found no replacement characters or common-pattern PII; neither scan resolves names, contextual identifiers, transcription rights or factual/legal accuracy.
+- Current review aid: `C:\Geriv2-Data\corpus\pretraining\review\human_review_sample.jsonl`, 29 deterministic source/document examples (22 ELTeC works, 4 BOE texts, 3 CORDIS articles); SHA-256 and pending decision list are recorded in the external corpus manifest. The full corpus scan found no replacement characters or common-pattern PII; neither scan resolves names, contextual identifiers, transcription rights or factual/legal accuracy.
 
-Generated exact counts, per-domain/per-split measurements, source hashes and tokenizer SHA-256 are in the external files `C:\geri2-corpus\processed\manifest.json` and `C:\geri2-corpus\tokenizer\metrics.json`.
+Generated exact counts, per-domain/per-split measurements, source hashes and tokenizer SHA-256 are in `C:\Geriv2-Data\corpus\pretraining\processed\manifest.json` and `C:\Geriv2-Data\corpus\pretraining\tokenizer\metrics.json`.

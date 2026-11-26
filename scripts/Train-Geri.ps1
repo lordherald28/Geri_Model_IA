@@ -1,9 +1,9 @@
 [CmdletBinding()]
 param(
-    [string]$PretrainingData = 'C:\geri2-corpus',
-    [string]$Tokenizer = 'C:\geri2-corpus\tokenizer\tokenizer.json',
-    [string]$SftData = 'C:\geri2-sft',
-    [string]$Output = 'C:\geri2-training-runs',
+    [string]$PretrainingData = 'C:\Geriv2-Data\corpus\pretraining',
+    [string]$Tokenizer = 'C:\Geriv2-Data\corpus\pretraining\tokenizer\tokenizer.json',
+    [string]$SftData = 'C:\Geriv2-Data\sft\candidate',
+    [string]$Output = 'C:\Geriv2-Data\training\runs',
     [switch]$Resume
 )
 

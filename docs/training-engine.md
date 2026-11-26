@@ -8,7 +8,7 @@ El preentrenamiento consume solo `train.jsonl`; la validación es independiente.
 
 Los artefactos SFT se preparan por separado. El input JSONL tiene una fila por conversación con `conversation_id`, `source_id` y `messages` alternados entre `user` y `assistant`; el registro de fuentes aporta URL, licencia exacta y atribución. El preparador valida estructura, duplicados y patrones comunes de PII, asigna train/validation/test de forma determinista por conversación y guarda hashes; el manifest queda siempre en revisión pendiente. El loader exige autorización humana, hash del tokenizador y de los tres splits, aprobación de cada fuente, consistencia de licencia/URL/atribución, ausencia de PII detectada y ninguna fuga entre splits. En SFT, el loss ignora los tokens user y optimiza las respuestas assistant.
 
-Se preparó un candidato OASST1 con filtro conservador: 779 diálogos de un turno, 701/38/40 en train/validation/test, 200 reservados para revisión humana; solo se retienen ramas españolas no sintéticas con anotaciones de revisión/seguridad positivas, respuesta mejor clasificada, PII de patrón ausente y longitud ≤256. El snapshot (SHA-256 `2a9a8fd343e9b28e04a895a669d3253f82d93e9c174d440199ae19d5fafbdff7`) y sus artefactos están en `C:\geri2-sft`; el manifiesto sigue sin aprobar. Correr `scripts/extract_oasst1_sft.py` y el comando `prepare-sft` descrito en [gobierno de datos](data-governance.md) reproduce la preparación desde el archivo local.
+Se preparó un candidato OASST1 con filtro conservador: 779 diálogos de un turno, 701/38/40 en train/validation/test, 200 reservados para revisión humana; solo se retienen ramas españolas no sintéticas con anotaciones de revisión/seguridad positivas, respuesta mejor clasificada, PII de patrón ausente y longitud ≤256. El snapshot (SHA-256 `2a9a8fd343e9b28e04a895a669d3253f82d93e9c174d440199ae19d5fafbdff7`) y sus artefactos están en `C:\Geriv2-Data\sft\candidate`; el manifiesto sigue sin aprobar. Correr `scripts/extract_oasst1_sft.py` y el comando `prepare-sft` descrito en [gobierno de datos](data-governance.md) reproduce la preparación desde el archivo local.
 
 Fila de entrada (`conversations.jsonl`):
 
@@ -36,7 +36,7 @@ El motor no necesita red una vez instaladas sus dependencias y presentes snapsho
 ## Benchmark de tamaño
 
 ```powershell
-python -m geri.training.cli benchmark --config configs/training.json --output C:\geri2-training-bench --benchmark-steps 30 --benchmark-repeats 3
+python -m geri.training.cli benchmark --config configs/training.json --output C:\Geriv2-Data\benchmarks\training-engine --benchmark-steps 30 --benchmark-repeats 3
 ```
 
 Comparar tamaños sintéticos tiny/small/medium; guardar `model-benchmark.json`. Se registran 30 pasos por repetición, 3 repeticiones, tokens/s, working set RSS, RAM disponible y bytes de checkpoint. No mide calidad ni viabilidad de entrenar el corpus completo.
@@ -44,23 +44,23 @@ Comparar tamaños sintéticos tiny/small/medium; guardar `model-benchmark.json`.
 Preparar un candidato conversacional desde archivos locales (requiere un registro de fuentes real):
 
 ```powershell
-python -m geri.training.cli prepare-sft --config configs/training.json --input C:\geri2-sft-input\conversations.jsonl --sources C:\geri2-sft-input\sources.json --data C:\geri2-sft --tokenizer C:\geri2-corpus\tokenizer\tokenizer.json
+python -m geri.training.cli prepare-sft --config configs/training.json --input C:\Geriv2-Data\sft\input\conversations.jsonl --sources C:\Geriv2-Data\sft\input\sources.json --data C:\Geriv2-Data\sft\candidate --tokenizer C:\Geriv2-Data\corpus\pretraining\tokenizer\tokenizer.json
 ```
 
 La salida sigue pendiente y no se puede entrenar hasta cerrar y registrar la revisión humana de fuentes, PII, factualidad y calidad.
 
 ## Smoke test (solo fixture sintético)
 
-Primer comando genera una fixture en `C:\geri2-smoke-data` y se detiene:
+Primer comando genera una fixture en `C:\Geriv2-Data\tests\smoke-data` y se detiene:
 
 ```powershell
-geri-train smoke --config configs/training.json --data C:\geri2-smoke-data --tokenizer C:\geri2-smoke-data\tokenizer\tokenizer.json --output C:\geri2-smoke-runs --steps 3
+geri-train smoke --config configs/training.json --data C:\Geriv2-Data\tests\smoke-data --tokenizer C:\Geriv2-Data\tests\smoke-data\tokenizer\tokenizer.json --output C:\Geriv2-Data\tests\smoke-runs --steps 3
 ```
 
 Solo después de inspeccionar que el manifiesto dice `synthetic_smoke_test_only`, el segundo comando autoriza hasta tres pasos sintéticos y escribe checkpoints en otra carpeta:
 
 ```powershell
-geri-train smoke --config configs/training.json --data C:\geri2-smoke-data --tokenizer C:\geri2-smoke-data\tokenizer\tokenizer.json --output C:\geri2-smoke-runs --steps 3 --authorize-pretraining
+geri-train smoke --config configs/training.json --data C:\Geriv2-Data\tests\smoke-data --tokenizer C:\Geriv2-Data\tests\smoke-data\tokenizer\tokenizer.json --output C:\Geriv2-Data\tests\smoke-runs --steps 3 --authorize-pretraining
 ```
 
 ## Entrenamiento manual con corpus aprobado
@@ -68,13 +68,13 @@ geri-train smoke --config configs/training.json --data C:\geri2-smoke-data --tok
 Después de resolver y registrar toda revisión humana de cada fuente, congelar el corpus y emitir expresamente en ambos manifests `dataset_status: approved_for_training`, `training_authorization: human_review_approved`, `human_review.decision: approved`, persona/fecha, `review_status: human_approved` para cada fuente y hashes de tokenizador/splits. La ejecución definitiva se inicia únicamente cuando el usuario ejecuta manualmente:
 
 ```powershell
-& .\scripts\Train-Geri.ps1 -PretrainingData C:\geri2-corpus -Tokenizer C:\geri2-corpus\tokenizer\tokenizer.json -SftData C:\geri2-sft -Output C:\geri2-training-runs
+& .\scripts\Train-Geri.ps1 -PretrainingData C:\Geriv2-Data\corpus\pretraining -Tokenizer C:\Geriv2-Data\corpus\pretraining\tokenizer\tokenizer.json -SftData C:\Geriv2-Data\sft\candidate -Output C:\Geriv2-Data\training\runs
 ```
 
 Para reanudar desde el último intervalo comprobado, con los mismos datos, configuración y salida:
 
 ```powershell
-& .\scripts\Train-Geri.ps1 -PretrainingData C:\geri2-corpus -Tokenizer C:\geri2-corpus\tokenizer\tokenizer.json -SftData C:\geri2-sft -Output C:\geri2-training-runs -Resume
+& .\scripts\Train-Geri.ps1 -PretrainingData C:\Geriv2-Data\corpus\pretraining -Tokenizer C:\Geriv2-Data\corpus\pretraining\tokenizer\tokenizer.json -SftData C:\Geriv2-Data\sft\candidate -Output C:\Geriv2-Data\training\runs -Resume
 ```
 
 Los checkpoints guardan estado de modelo, AdamW, contador, generadores aleatorios, configuración, historial y procedencia del manifiesto. Se guardan atómicamente en cada intervalo de evaluación con SHA-256 y copia previa para recuperación; `best.pt` conserva la menor pérdida de validación. El script aplica una guarda de red en el proceso Python y comprueba snapshots del corpus offline. El script PowerShell no cambia firewall del sistema: iniciar sin conexión de red. Si SFT excede la regresión del 10% sobre el test reservado del preentrenamiento, `promoted-sft.pt` no se crea y se conserva `pretraining/best.pt`.
