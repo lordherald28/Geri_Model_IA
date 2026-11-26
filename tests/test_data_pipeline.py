@@ -1,9 +1,10 @@
 import json
+from types import SimpleNamespace
 from pathlib import Path
 
 import pytest
 
-from geri.data.pipeline import normalize, quality_reasons, sha256, validate
+from geri.data.pipeline import _check_capacity, normalize, quality_reasons, sha256, validate
 
 
 def test_normalization_is_unicode_nfc_and_collapses_space():
@@ -31,3 +32,12 @@ def test_validator_checks_hashes_and_split_membership(tmp_path: Path):
         stream.write("{}\n")
     with pytest.raises(ValueError, match="hash mismatch"):
         validate(tmp_path)
+
+
+def test_capacity_guard_preserves_configured_reserve(tmp_path: Path, monkeypatch):
+    config = {"min_free_disk_bytes": 1000, "max_pipeline_storage_bytes": 200}
+    monkeypatch.setattr("geri.data.pipeline.shutil.disk_usage", lambda _: SimpleNamespace(free=1199))
+    with pytest.raises(OSError, match="need at least 1200"):
+        _check_capacity(tmp_path / "output", config)
+    monkeypatch.setattr("geri.data.pipeline.shutil.disk_usage", lambda _: SimpleNamespace(free=1200))
+    _check_capacity(tmp_path / "output", config)

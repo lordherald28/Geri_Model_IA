@@ -3,7 +3,8 @@
     {
       "id": "eltec_spa_v0.9.1",
       "type": "eltec_files",
-      "url_template": "https://raw.githubusercontent.com/COST-ELTeC/ELTeC-spa/v0.9.1/{path}",
+      "url_template": "https://raw.githubusercontent.com/COST-ELTeC/ELTeC-spa/6c0160ea2524cead72904b11992959748434aa57/{path}",
+      "source_revision": "6c0160ea2524cead72904b11992959748434aa57",
       "filename": "eltec-spa-v0.9.1-selected-22",
       "license": "Public-domain novel text; ELTeC TEI markup and metadata CC BY 4.0",
       "license_url": "https://creativecommons.org/licenses/by/4.0/",

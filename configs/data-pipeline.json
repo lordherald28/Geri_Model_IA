@@ -1,7 +1,9 @@
 {
   "seed": 20261125,
-  "max_download_bytes": 25000000,
-  "max_total_download_bytes": 25000000,
+  "max_download_bytes": 2500000,
+  "max_total_download_bytes": 15000000,
+  "max_pipeline_storage_bytes": 100000000,
+  "min_free_disk_bytes": 1073741824,
   "train_ratio": 0.9,
   "validation_ratio": 0.05,
   "test_ratio": 0.05,

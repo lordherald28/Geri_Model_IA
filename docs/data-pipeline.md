@@ -10,7 +10,7 @@ The selection contains copyright-sensitive dataset facts (release, file-level pr
 
 ## Pipeline
 
-Install with `python -m pip install -e ".[dev]"`. Data are written under `data/` by default; pass `--output` to place them elsewhere. Configure a maximum per-source-file and aggregate download budget in `configs/data-pipeline.json`. Acquisition uses atomic `.part` files, checks `Content-Length` and streamed size, and reuses cached source files. `--offline` fails if any pinned source snapshot is missing.
+Install with `python -m pip install -e ".[dev]"`. Data are written under `data/` by default; pass `--output` to place them elsewhere. The default `data/` path is rejected on a drive below the measured free-space threshold; on this machine D: has very little free space, so use an output path on C:. Before any acquisition the pipeline requires at least 1 GiB of free-space reserve plus the configured 100 MB total artifact cap. It limits each downloaded XML to 2.5 MB and all source downloads to 15 MB. These ceilings include roughly 23% per-file margin over the largest observed XML (2,039,678 bytes), 32% over the 11,360,637-byte source snapshot total, and approximately 2x over the observed full output (49,638,387 bytes). Acquisition uses atomic `.part` files, checks `Content-Length` and streamed size, and reuses cached source files. It checks final output size against the cap. `--offline` fails if any pinned source snapshot is missing. The source URL uses immutable Git commit `6c0160ea2524cead72904b11992959748434aa57`.
 
 ```powershell
 geri-data prepare --source eltec_spa_v0.9.1 --output C:\geri2-corpus
@@ -26,6 +26,10 @@ The byte-level BPE is trained on all accepted training sentences grouped by trai
 ## Measured run (2026-11-25)
 
 Output was kept outside Git on C: because D: had approximately 96 MiB free. The 22 pinned XML snapshots occupied 11,360,637 bytes. The generated processed corpus occupies 38,038,110 bytes, plus tokenizer artifacts. Input was 102,900 sentence candidates; 44,271 were accepted and 15 exact duplicates removed. Rejection reason counts were 58,614 too short and 257 with low letter ratio; reason counts can overlap. The split contains 32,503 train rows (19 novels), 7,978 validation rows (1 novel), and 3,790 test rows (2 novels). The small number of validation/test documents makes these measurements noisy and strongly domain-specific.
+
+## Current resource preflight (2026-11-25)
+
+At follow-up, Windows reported a Ryzen 5 7530U (6 cores/12 logical processors), 31.35 GiB installed memory and 12.48 GiB available physical memory. C: had 192.45 GiB free, D: 26.19 MiB, and E: 2.14 GiB. The existing corpus occupies 49,638,387 bytes. The pipeline therefore sets the download/output ceilings above, keeps a 1 GiB free-space reserve and rejects an output volume without reserve plus the 100 MB artifact allowance. Corpus acquisition was not repeated during this preflight. GPU availability was not relied upon; the data pipeline is CPU-only.
 
 | Vocabulary | Actual size | Train chars/token | Validation tokens/char |
 |---:|---:|---:|---:|

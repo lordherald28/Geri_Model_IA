@@ -5,6 +5,7 @@ import hashlib
 import html
 import json
 import re
+import shutil
 import unicodedata
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -24,6 +25,27 @@ def sha256(path: Path) -> str:
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def _check_capacity(output_dir: Path, config: dict) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    usage = shutil.disk_usage(output_dir)
+    required = int(config["min_free_disk_bytes"]) + int(config["max_pipeline_storage_bytes"])
+    if usage.free < required:
+        raise OSError(
+            f"insufficient free space on {output_dir.drive or output_dir.anchor}: "
+            f"{usage.free} bytes available; need at least {required} "
+            "(configured data cap plus reserved free-space margin). "
+            "Choose an output path on a drive with more free space."
+        )
+
+
+def _check_output_size(output_dir: Path, config: dict) -> int:
+    total = sum(path.stat().st_size for path in output_dir.rglob("*") if path.is_file())
+    limit = int(config["max_pipeline_storage_bytes"])
+    if total > limit:
+        raise OSError(f"pipeline output is {total} bytes; configured cap is {limit}")
+    return total
 
 
 def normalize(text: str) -> str:
@@ -168,6 +190,7 @@ def _records_for_document(text: str, document: str, source: dict) -> list[dict]:
 
 def prepare(config_path: Path, output_dir: Path, source_ids: set[str] | None = None, offline: bool = False) -> dict:
     config = json.loads(config_path.read_text(encoding="utf-8"))
+    _check_capacity(output_dir, config)
     registry_path = config_path.with_name("sources.json")
     registry = json.loads(registry_path.read_text(encoding="utf-8"))
     selected = [s for s in registry["sources"] if source_ids is None or s["id"] in source_ids]
@@ -252,6 +275,7 @@ def prepare(config_path: Path, output_dir: Path, source_ids: set[str] | None = N
         path = processed_dir / f"{split}.jsonl"
         manifest["artifacts"][path.name] = {"bytes": path.stat().st_size, "sha256": sha256(path)}
     (processed_dir / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    _check_output_size(output_dir, config)
     return manifest
 
 
@@ -284,6 +308,9 @@ def validate(output_dir: Path) -> dict:
 def dimension_tokenizer(output_dir: Path, vocab_candidates: Iterable[int] | None = None) -> dict:
     from tokenizers import Tokenizer, models, pre_tokenizers, trainers, decoders, normalizers
 
+    config_path = Path(__file__).resolve().parents[3] / "configs" / "data-pipeline.json"
+    config = json.loads(config_path.read_text(encoding="utf-8"))
+    _check_capacity(output_dir, config)
     processed = output_dir / "processed"
     records = [json.loads(line) for line in (processed / "train.jsonl").read_text(encoding="utf-8").splitlines() if line]
     if not records:
@@ -292,8 +319,6 @@ def dimension_tokenizer(output_dir: Path, vocab_candidates: Iterable[int] | None
     for row in records:
         docs.setdefault(row["document_hash"], []).append(row["text"])
     train_texts = ["\n".join(texts) for texts in docs.values()]
-    config_path = Path(__file__).resolve().parents[3] / "configs" / "data-pipeline.json"
-    config = json.loads(config_path.read_text(encoding="utf-8"))
     limit = int(config["max_tokenizer_train_documents"])
     if len(train_texts) > limit:
         train_texts = train_texts[:limit]
@@ -323,6 +348,7 @@ def dimension_tokenizer(output_dir: Path, vocab_candidates: Iterable[int] | None
     (artifacts / selected["model_file"]).replace(final_path)
     report = {"algorithm": "byte-level BPE", "library": "tokenizers", "normalization": "NFC", "training_data": "train documents only", "selection_metric": "lowest validation tokens per character", "candidate_measurements": reports, "selected_vocab": selected["requested_vocab"], "selected_actual_vocab": selected["actual_vocab"], "tokenizer_file": final_path.name, "tokenizer_sha256": sha256(final_path), "test_split_used_for_selection": False}
     (artifacts / "metrics.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    _check_output_size(output_dir, config)
     return report
 
 
