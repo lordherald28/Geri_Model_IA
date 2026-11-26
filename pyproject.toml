@@ -5,15 +5,17 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "geri2-data-pipeline"
 version = "0.1.0"
-description = "Reproducible Spanish corpus preparation and tokenizer pipeline for Geri 2.0"
+description = "Offline Spanish corpus preparation and training pipeline for Geri 2.0"
 requires-python = ">=3.10"
 dependencies = ["tokenizers>=0.20,<1"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<10"]
+training = ["torch>=2.5,<3", "psutil>=5.9,<8"]
 
 [project.scripts]
 geri-data = "geri.data.cli:main"
+geri-train = "geri.training.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

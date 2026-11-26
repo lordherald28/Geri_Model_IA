@@ -25,6 +25,10 @@ La frontera offline debe aceptar artefactos inmutables con manifiesto, hashes y 
 
 `src/geri/data`, `tokenization`, `model`, `training`, `evaluation` e `inference` separan responsabilidades. `configs/` conserva configuración declarativa; `benchmarks/` guarda protocolos y resultados agregados. Los datos, índices, cachés y artefactos grandes quedan fuera de Git; el repositorio conserva contratos, manifiestos sanitizados y documentación.
 
+## Selección experimental vigente
+
+El microbenchmark sintético en CPU seleccionó para el piloto 238.848 parámetros: vocabulario 2.048, `d_model=64`, 2 capas/cabezas, FFN 256, contexto 128 y batch 4. AdamW con clipping, evaluación/early stopping y checkpoints se implementan en `src/geri/training/`; véase `docs/benchmarks.md` para resultados y límites. Esta configuración no prueba capacidad lingüística general ni autoriza el corpus.
+
 ## Decisiones aplazadas
 
-No se fijan todavía arquitectura detallada, tamaño, vocabulario, longitud de contexto, precisión, optimizador, batch, duración, estrategia conversacional ni tecnología de almacenamiento. Deben decidirse tras auditoría de corpus y perfilado en hardware disponible.
+Siguen pendientes los datos aprobados de pretraining/SFT, factualidad/cobertura esperada, duración/energía aceptable, derechos aplicables a la distribución de pesos y evaluación humana. La configuración de entrenamiento permanece piloto hasta tener datos aprobados y calidad evaluada. La inferencia y política de promoción final no están implementadas.

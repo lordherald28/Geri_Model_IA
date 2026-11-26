@@ -8,17 +8,17 @@ Establecer repositorio, límites de solo lectura, arquitectura, gobierno de dato
 
 Se implementó el pipeline, se auditaron las fuentes de Geri v1 y se preparó una selección ELTeC, BOE y CORDIS; véase [resultados](data-pipeline.md). La revisión humana de derechos/transcripciones, traducción automática, factualidad y PII sigue pendiente. Completarla antes de ampliar el corpus o distribuir modelos.
 
-## Fase 3 — perfilado y especificación
+## Fase 3 — perfilado y especificación (benchmark CPU inicial completado)
 
-Acordar presupuesto computacional, benchmark de preparación/tokenización/modelo pequeño desechable y criterios de viabilidad. Elegir contratos de datos, tokenizador y estrategia experimental sin comprometer entrenamiento prolongado.
+Benchmark CPU de tres candidatos y configuración piloto documentados en `docs/benchmarks.md`. Falta un presupuesto de tiempo/energía y medición completa con corpus aprobado.
 
 ## Fase 4 — pipeline reproducible (adquisición, preparación, tokenización y verificación offline completadas)
 
 El pipeline actual cumple la preparación y verificación técnica; revisión humana y aprobación del corpus permanecen pendientes antes de cualquier entrenamiento. Repetir hashes y offline-check al cambiar corpus o fuentes.
 
-## Fase 5 — experimentos controlados
+## Fase 5 — motor y experimentos controlados
 
-Comparar configuraciones sustentadas por benchmarks; registrar calidad/coste; detener cuando se alcance límite aprobado o no haya mejora. Solo después diseñar entrenamiento amplio.
+Motor offline, SFT separado, smoke sintético, checkpoints y recuperación están implementados con pruebas. El entrenamiento de producto continúa bloqueado por revisión humana de fuentes, corpus SFT real y pruebas de calidad. No iniciar entrenamiento prolongado antes de esos cierres.
 
 ## Fase 6 — conversación, continuidad e inferencia
 

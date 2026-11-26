@@ -10,7 +10,7 @@ Modelo desde inicialización aleatoria. Dataset empaquetado con separación por 
 
 ## Conversación
 
-Tratar corpus conversacional como una fase posterior, separada del preentrenamiento. Exigir licencia, procedencia y revisión de seguridad/calidad. Definir formato de turnos y criterios de respuesta antes de recolectar ejemplos. Evaluar en un conjunto humano reservado y reportar factualidad, seguimiento de instrucciones, fluidez, sesgos y abstención. No asumir que aprendizaje continuo equivale a actualización segura.
+Tratar corpus conversacional como una fase posterior, separada del preentrenamiento. El contrato de entrada usa pares alternados user/assistant y splits por conversación. `prepare-sft` valida procedencia de la fuente, estructura, duplicados y PII común; deja manifest pendiente. El loader requiere revisión/aprobación humana y entrena loss solo en respuestas assistant. Evaluar en un conjunto humano reservado y reportar factualidad, seguimiento de instrucciones, fluidez, sesgos y abstención. No asumir que aprendizaje continuo equivale a actualización segura.
 
 ## Aprendizaje continuo
 

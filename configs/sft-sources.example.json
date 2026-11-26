@@ -1,0 +1,10 @@
+{
+  "sources": [
+    {
+      "source_id": "replace_with_reviewed_source_id",
+      "source_url": "https://example.invalid/source-or-license-record",
+      "license": "replace_with_exact_license_and_version",
+      "attribution": "replace_with_required_attribution"
+    }
+  ]
+}

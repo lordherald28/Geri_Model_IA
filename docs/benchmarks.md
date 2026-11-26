@@ -1,26 +1,31 @@
-# Dimensionamiento y benchmarks
+# Dimensionamiento del modelo y benchmarks
 
-## Equipo observado en esta sesión
+## Equipo y medición
 
-Windows, AMD Ryzen 5 7530U, 6 núcleos/12 hilos, 31,35 GiB RAM. En el preflight del 25-11-2026 C: reportó 192,4 GiB libres, D: 43,4 GiB libres y 11,3 GiB de RAM física disponible. Se conservaron el proyecto en D: y los artefactos de datos en C:; no se movieron ni eliminaron archivos. No se inspeccionó GPU dedicada y no se asume acelerador disponible. El almacenamiento y la RAM disponible deben medirse de nuevo antes de cada expansión o entrenamiento.
+Windows; AMD Ryzen 5 7530U, 6 núcleos/12 hilos; 31,35 GiB RAM. PyTorch 2.15.0+cpu, Python 3.12.10, seis hilos intra-op. Durante la medición había 12,95 GB de RAM física disponibles y aproximadamente 206 GB libres en C:. No se identificó GPU de entrenamiento. Medición repetible y agregado en [`model-benchmark-20261125.json`](../benchmarks/model-benchmark-20261125.json).
 
-## Protocolo antes de elegir tamaño
+Se compararon tres tamaños en CPU con batch 4, contexto 128, 2 pasos de calentamiento y 30 pasos medidos por repetición, 3 repeticiones cada uno. Entradas de tokens aleatorios: sirve para dimensionar compute/memoria, no calidad ni flujo de lectura del corpus.
 
-1. Registrar CPU/GPU y memoria efectivamente disponible, sistema operativo, almacenamiento/sistema de archivos y procesos concurrentes.
-2. Usar un microbenchmark reproducible del stack candidato en CPU; comparar varios tamaños candidatos derivados de un presupuesto explícito, no escoger cifras por intuición.
-3. Medir tokens/segundo, memoria pico del proceso y del sistema, tiempo de inicio, uso de disco por dataset/checkpoint, estabilidad térmica y coste energético si hay medidor.
-4. Estimar pasos/tiempo sobre volumen aprobado y reportar rango con margen de seguridad; distinguir capacidad de memoria de viabilidad temporal.
-5. Repetir mediciones y registrar configuración, versiones, semilla y hashes. Definir umbral de RAM/disco reservado para el sistema y recuperación antes de correr.
+| Candidato | Parámetros | Tokens/s promedio (rango) | RSS pico absoluto | Checkpoint |
+|---|---:|---:|---:|---:|
+| tiny: d=64, 2 capas | 238.848 | 19.422 (18.906–19.758) | 332 MB | 2,90 MB |
+| small: d=128, 4 capas | 1.069.824 | 5.949 (5.553–6.186) | 378 MB | 12,89 MB |
+| medium: d=192, 4 capas | 2.194.560 | 4.040 (3.880–4.144) | 417 MB | 26,39 MB |
 
-## Matriz de decisión
+Se selecciona `tiny` para el piloto por throughput y coste de checkpoint; la RAM medida está muy por debajo de la reserva configurada de 3 GiB. RSS pico absoluto incluye runtime/PyTorch y cachés del allocator; entre réplicas el baseline varía. La carga real podría usar más memoria por tokenizar 48.948 registros y mantener splits en RAM.
 
-| Recurso | Evidencia a medir | Criterio para continuar |
-|---|---|---|
-| CPU | tokens/s, uso sostenido, tiempo total estimado | ciclo completo dentro del presupuesto temporal acordado |
-| RAM | pico de entrenamiento, loader y evaluación | pico más reserva operativa cabe sin paginación sostenida |
-| Disco | corpus, shards, checkpoints, temporales y retención | capacidad disponible cubre todo el ciclo y recuperación |
-| Presupuesto | horas, energía y coste de oportunidad | presupuesto explícito aprobado y experimento informativo |
+Para el corpus candidato actual hay 1,883,060 tokens BPE en train y 563,753 en validation. Con batch 4, contexto 128 y límite de 10.000 pasos se procesarían hasta 5,12 M posiciones objetivo (2,72 recorridos equivalentes sobre tokens train), aproximadamente 4,4 min a throughput sintético promedio, sin evaluación, checkpoints, preparación ni carga. La duración real será mayor; el coste completo no se ha medido ni debe usarse como promesa.
 
-## Resultados pendientes
+## Configuración medida
 
-No se ejecutó entrenamiento ni benchmark de rendimiento de modelo. El benchmark de preparación y tokenizador (CPU) está en [pipeline y resultados](data-pipeline.md). Falta fijar presupuesto de horas/energía para cualquier entrenamiento y rendimiento del modelo. No se recomienda tamaño de modelo hasta completar esas mediciones y las revisiones humanas del corpus.
+`configs/training.json`: vocabulario 2.048, d_model 64, 2 cabezas, 2 capas, FFN 256, contexto 128, batch 4, CPU/6 threads. AdamW a 3e-4, weight decay 0,1, gradient clip 1,0, evaluación/checkpoint cada 100 pasos y early stopping tras 8 evaluaciones sin mejora de al menos 0,001. SFT se ejecuta después con optimizador nuevo, LR 1e-4, máximo 1.000 pasos y evaluación cada 25 pasos; la elección final de SFT debe superar el gate de regresión. Son hiperparámetros piloto; no se han entrenado sobre corpus aprobado.
+
+## Registro y repetición
+
+```powershell
+python -m geri.training.cli benchmark --config configs/training.json --output C:\geri2-training-bench --benchmark-steps 30 --benchmark-repeats 3
+```
+
+El benchmark informa versiones, hilos, RAM disponible, RSS, tiempo por paso, tokens/s y tamaño de checkpoint. Los logs de entrenamiento registran pérdida train/validation, grad norm, tiempo transcurrido/restante estimado, tokens/s, RSS, RAM libre y disco libre por intervalo. Energy/thermal no se midieron.
+
+El tamaño seleccionado es una decisión de throughput, no una conclusión de suficiencia lingüística: 238.848 parámetros es extremadamente pequeño para cubrir factualidad/conversación amplia. TinyStories muestra resultados pequeños en un dominio sintético restringido, y no se traslada esa evidencia al español del corpus. Se requiere corpus aprobado y evaluación humana antes de cualquier conclusión sobre capacidad.
