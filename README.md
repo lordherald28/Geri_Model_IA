@@ -4,7 +4,7 @@ Proyecto de investigación para construir un modelo de lenguaje en español con 
 
 ## Estado
 
-Fase de preparación de piloto — motor probado offline, benchmark CPU repetido con contexto 256, candidato SFT curado de 741 conversaciones (733 OASST retenidas y 8 diálogos Geri originales). Ambos manifiestos siguen sin aprobación humana y bloquean el entrenamiento definitivo. No se inició entrenamiento de producto.
+Motor offline y corpus aprobados por el usuario únicamente para entrenamiento experimental privado; sin permiso de distribución ni certificación factual. Existe un checkpoint SFT local fuera del repositorio. La inferencia offline está implementada; su evaluación conversacional inicial fue deficiente y no acredita calidad de asistente. Esta tarea no inició entrenamiento.
 
 ## Mapa
 
@@ -21,12 +21,12 @@ Fase de preparación de piloto — motor probado offline, benchmark CPU repetido
 
 PyTorch 2.15.0+cpu y tokenizers 0.23.3 se reutilizaron desde el entorno local compatible de Geri v1, solo para benchmark y pruebas, sin modificar ese proyecto ni usar sus datos/modelos. Para preparar otro entorno: `python -m pip install -e ".[training,dev]"`; en equipos aislados, transferir ruedas compatibles con sus hashes.
 
-Flujo manual, preparación SFT y comando PowerShell: [motor de entrenamiento](docs/training-engine.md). El benchmark de selección está en [benchmarks](docs/benchmarks.md). No ejecutar `scripts\Train-Geri.ps1` hasta que ambos manifests indiquen aprobación humana explícita.
+Flujo manual de entrenamiento y comando PowerShell: [motor de entrenamiento](docs/training-engine.md). Chat local y evaluación: [inferencia offline](docs/inference.md). Benchmarks de selección: [benchmarks](docs/benchmarks.md).
 
 Los datos, artefactos de prueba y salidas de entrenamiento se centralizan fuera del repositorio en `C:\Geriv2-Data\`; el mapa está en [datos y reproducibilidad](docs/data-pipeline.md).
 
 ## Principios
 
-Geri (proyecto anterior) es referencia de solo lectura. No se reutilizan sus datos, pesos, tokenizadores ni checkpoints. El flujo de entrenamiento no depende de red ni de servicios externos; la CPU usa la instalación PyTorch existente. El corpus y la licencia siguen pendientes de aprobación humana; la arquitectura es solo una configuración piloto dimensionada por microbenchmark.
+Geri (proyecto anterior) es referencia de solo lectura. No se reutilizan sus datos, pesos, tokenizadores ni checkpoints. La carga de datos, entrenamiento e inferencia usan guardas offline; la CPU reutiliza la instalación PyTorch existente. La autorización de corpus es privada y experimental, no concede distribución ni certifica factualidad.
 
 Consultar [pipeline y resultados medidos](docs/data-pipeline.md), [arquitectura y decisiones](docs/architecture.md), [gobierno de datos](docs/data-governance.md), [metodología](docs/methodology.md), [benchmarks](docs/benchmarks.md) y [hoja de ruta](docs/roadmap.md).
