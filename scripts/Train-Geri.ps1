@@ -4,6 +4,8 @@ param(
     [string]$Tokenizer = 'C:\Geriv2-Data\corpus\pretraining\tokenizer\tokenizer.json',
     [string]$SftData = 'C:\Geriv2-Data\sft\candidate',
     [string]$Output = 'C:\Geriv2-Data\training\runs',
+    [string]$PreflightOutput = 'C:\Geriv2-Data\tests\training-startup',
+    [switch]$PreflightOnly,
     [switch]$Resume
 )
 
@@ -22,6 +24,21 @@ if ($LASTEXITCODE -ne 0) { throw 'PyTorch o tokenizers no están disponibles en 
 
 & $Python -m geri.data.cli offline-check --output $PretrainingData
 if ($LASTEXITCODE -ne 0) { throw 'Falló la verificación offline del corpus de preentrenamiento.' }
+
+if ($PreflightOnly) {
+    $PreflightArguments = @(
+        '-m', 'geri.training.cli', 'preflight',
+        '--config', (Join-Path $ProjectRoot 'configs/training.json'),
+        '--data', $PretrainingData,
+        '--tokenizer', $Tokenizer,
+        '--sft-data', $SftData,
+        '--sft-tokenizer', $Tokenizer,
+        '--output', $PreflightOutput
+    )
+    & $Python @PreflightArguments
+    if ($LASTEXITCODE -ne 0) { throw 'Falló la validación integral de arranque; no se inició el entrenamiento.' }
+    return
+}
 
 $Arguments = @(
     '-m', 'geri.training.cli', 'train',

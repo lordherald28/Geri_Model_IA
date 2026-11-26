@@ -67,6 +67,12 @@ def load_frozen_corpus(root: Path, tokenizer_path: Path, allow_synthetic: bool =
     status = manifest.get("dataset_status", "")
     if status != "approved_for_training" and not (allow_synthetic and status == "synthetic_smoke_test_only"):
         raise ValueError(f"dataset not approved for training: {status or 'missing approval status'}")
+    manifest_block_size = manifest.get("max_seq_len")
+    if status == "approved_for_training" and block_size is not None and manifest_block_size is not None and int(block_size) != int(manifest_block_size):
+        raise ValueError(f"configured block_size {block_size} does not match manifest max_seq_len {manifest_block_size}")
+    effective_block_size = block_size if block_size is not None else manifest_block_size
+    if not isinstance(effective_block_size, int) or effective_block_size <= 0:
+        raise ValueError("block_size is required when the corpus manifest has no positive max_seq_len")
     if status == "approved_for_training":
         _require_human_approval(manifest)
         _check_tokenizer_hash(manifest, tokenizer_path)
@@ -100,7 +106,7 @@ def load_frozen_corpus(root: Path, tokenizer_path: Path, allow_synthetic: bool =
             eos = tokenizer.token_to_id("<eos>")
             if eos is not None:
                 tokens.append(eos)
-        splits[split] = TokenBlockDataset(tokens, int(block_size or manifest["max_seq_len"]))
+        splits[split] = TokenBlockDataset(tokens, effective_block_size)
         split_docs[split], split_texts[split] = docs, texts
     for left, right in (("train", "validation"), ("train", "test"), ("validation", "test")):
         if split_docs[left] & split_docs[right] or split_texts[left] & split_texts[right]:
@@ -116,6 +122,9 @@ def load_sft_corpus(root: Path, tokenizer_path: Path, block_size: int) -> tuple[
 
     processed = root / "processed"
     manifest = json.loads((processed / "manifest.json").read_text(encoding="utf-8"))
+    manifest_block_size = manifest.get("max_seq_len")
+    if manifest_block_size is not None and int(block_size) != int(manifest_block_size):
+        raise ValueError(f"configured block_size {block_size} does not match SFT manifest max_seq_len {manifest_block_size}")
     _require_human_approval(manifest)
     _check_tokenizer_hash(manifest, tokenizer_path)
     approved_sources = {s["source_id"]: s for s in manifest["sources"] if s.get("review_status") == "human_approved" and s.get("license")}

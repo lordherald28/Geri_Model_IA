@@ -69,6 +69,14 @@ geri-train smoke --config configs/training.json --data C:\Geriv2-Data\tests\smok
 
 Después de resolver y registrar toda revisión humana de cada fuente, congelar el corpus y emitir expresamente en ambos manifests `dataset_status: approved_for_training`, `training_authorization: human_review_approved`, `human_review.decision: approved`, persona/fecha, `review_status: human_approved` para cada fuente y hashes de tokenizador/splits. La ejecución definitiva se inicia únicamente cuando el usuario ejecuta manualmente:
 
+Para comprobar de extremo a extremo la selección de Python, manifests, hashes, loaders, alcance privado, recursos y forward del modelo con los corpus aprobados sin crear optimizador ni checkpoints, usar `-PreflightOnly`. El reporte queda en `C:\Geriv2-Data\tests\training-startup\startup-preflight.json`:
+
+```powershell
+.\scripts\Train-Geri.ps1 -PreflightOnly
+```
+
+El launcher definitivo aplica el mismo contexto 256 desde `configs/training.json` a ambos loaders; el preflight valida vocabulario 2.048, autorización experimental privada y forward `[1,256,2048]`. La prueba de preflight no ejecuta pasos de entrenamiento.
+
 ```powershell
 & .\scripts\Train-Geri.ps1 -PretrainingData C:\Geriv2-Data\corpus\pretraining -Tokenizer C:\Geriv2-Data\corpus\pretraining\tokenizer\tokenizer.json -SftData C:\Geriv2-Data\sft\candidate -Output C:\Geriv2-Data\training\runs
 ```
