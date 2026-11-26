@@ -25,7 +25,7 @@ The byte-level BPE is trained on all accepted training sentences grouped by trai
 
 ## Measured run (2026-11-25)
 
-Output was kept outside Git on C: because D: had approximately 96 MiB free. The 22 pinned XML snapshots occupied 11,360,637 bytes. The generated processed corpus occupies 38,038,110 bytes, plus tokenizer artifacts. Input was 102,900 sentence candidates; 44,271 were accepted, 15 exact duplicates removed, 58,614 rejected as too short, and 257 for low letter ratio. The split contains 32,503 train rows (19 novels), 7,978 validation rows (1 novel), and 3,790 test rows (2 novels). The small number of validation/test documents makes these measurements noisy and strongly domain-specific.
+Output was kept outside Git on C: because D: had approximately 96 MiB free. The 22 pinned XML snapshots occupied 11,360,637 bytes. The generated processed corpus occupies 38,038,110 bytes, plus tokenizer artifacts. Input was 102,900 sentence candidates; 44,271 were accepted and 15 exact duplicates removed. Rejection reason counts were 58,614 too short and 257 with low letter ratio; reason counts can overlap. The split contains 32,503 train rows (19 novels), 7,978 validation rows (1 novel), and 3,790 test rows (2 novels). The small number of validation/test documents makes these measurements noisy and strongly domain-specific.
 
 | Vocabulary | Actual size | Train chars/token | Validation tokens/char |
 |---:|---:|---:|---:|
